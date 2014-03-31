@@ -40,7 +40,7 @@ func (this *RenderSystem) Initialize() {
 
 	// Interested in objects with aspect and render data
 	this.SetDataInterest(dataManager.Get(new(RenderData)))
-	this.SetDataInterest(dataManager.Get(new(RenderData)))
+	this.SetDataInterest(dataManager.Get(new(AspectData)))
 }
 
 func (this *RenderSystem) ProcessObject(object *Object) {

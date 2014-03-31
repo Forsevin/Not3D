@@ -3,17 +3,15 @@ package oden
 import "fmt"
 
 // Having the data manager a global variable will make it a bit easier
-// i.e we wont need to pass it arounds to every system or Data containers
+// we wont need to pass it arounds to every system or Data containers (it could be retrieved from base but fuck that)
 var (
 	dataManager *DataManager
 )
 
-// The interaction between user defined actions
-// should be between this and the custom application
-
 // $ activeScene - The currently in use
 // $ scenes - Avaible scenes
 // $ dataManager - Use this to initialize data containers
+// $ globalSystems - Systems that will be processed in every scene
 type Base struct {
 	activeScene   *Scene
 	scenes        map[string]*Scene
@@ -45,24 +43,19 @@ func NewBase() *Base {
 
 }
 
-// Return the data manager used to intitialize
-// data containers before use
+// DataManager hold unique ids for each data
 func (this *Base) DataManager() *DataManager {
 	return this.dataManger
 }
 
 func (this *Base) Process() {
+	// UpdateSystemObjectPossesions should only be called when needed (now it doesn't)
+	// e.g when adding a new object, updating a system etc.
 	this.UpdateSystemObjectPossesions()
+
 	for _, system := range this.globalSystems {
 		system.Process()
 	}
-}
-
-// Create a new object THIS CAN PROBOABLY BE DISCARGED (unless objects will need some additional data in the future)
-// Note, this will not add this object to the scene
-// To add a object to a scene use the scene instance
-func (this *Base) CreateObject() *Object {
-	return NewObject()
 }
 
 // Set/switch the active scene
@@ -83,11 +76,6 @@ func (this *Base) GetScene(identifier string) *Scene {
 // Get currently active scene
 func (this *Base) GetActiveScene() *Scene {
 	return this.activeScene
-}
-
-// Add a system to the current scene
-func (this *Base) AddSystem(system ISystem) {
-
 }
 
 // Add a global system, this system will be proccesed in all scenes

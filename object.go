@@ -18,9 +18,9 @@ func NewObject() *Object {
 }
 
 func (this *Object) AddData(data IData) {
-	this.data[data.Index()] = data
-	// TODO because bitset uses uint we might aswell use uint for data index
-	this.bits.Set(uint(data.Index()))
+	// wop wop
+	this.data[dataManager.Get(data)] = data
+	this.bits.Set(dataManager.Get(data))
 }
 
 func (this *Object) Bits() *bitset.BitSet {
