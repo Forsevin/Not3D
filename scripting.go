@@ -23,7 +23,7 @@ func NewScriptSystem() *ScriptSystem {
 
 func (this *ScriptSystem) Initialize() {
 	this.ProcessFunc = this.ProcessObject
-	this.SetDataInterest(dataManager.Get(new(ScriptData)))
+	this.SetDataInterest(gDataManager.Get(new(ScriptData)))
 }
 
 // Generally, only the update method in source is called

@@ -17,16 +17,18 @@ func NewObject() *Object {
 	}
 }
 
+// Add data container to this object with its index to use
+// later for system processing
 func (this *Object) AddData(data IData) {
-	// wop wop
-	this.data[dataManager.Get(data)] = data
-	this.bits.Set(dataManager.Get(data))
+	this.data[gDataManager.Get(data)] = data
+	this.bits.Set(gDataManager.Get(data))
 }
 
 func (this *Object) Bits() *bitset.BitSet {
 	return &this.bits
 }
 
+// Return data by its type name (the most inefficent)
 func (this *Object) DataByName(name string) IData {
 	for _, data := range this.data {
 		if reflect.TypeOf(data).String() == name {
@@ -36,6 +38,7 @@ func (this *Object) DataByName(name string) IData {
 	return nil
 }
 
+// Return data by its type (more efficent)
 func (this *Object) DataByType(data IData) IData {
 	datatype := reflect.TypeOf(data)
 	for _, data := range this.data {
@@ -47,6 +50,7 @@ func (this *Object) DataByType(data IData) IData {
 	return nil
 }
 
+// Return data by its data index (the most efficent)
 func (this *Object) DataByIndex(index uint) IData {
 	return this.data[index]
 }

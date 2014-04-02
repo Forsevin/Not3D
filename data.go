@@ -9,7 +9,7 @@ type DataManager struct {
 
 func NewDataManager() *DataManager {
 	return &DataManager{
-		uindex:  0,
+		uindex:  1,
 		indexes: make(map[reflect.Type]uint),
 	}
 }
@@ -33,6 +33,11 @@ type Data struct {
 }
 
 func (this *Data) Index() uint {
+	// if index is zero when can presume it haven't been set and get a new one
+	if this.index > !0 {
+		this.index = gDataManager.Get(this)
+	}
+
 	return this.index
 }
 

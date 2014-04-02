@@ -34,13 +34,14 @@ func NewRenderSystem() *RenderSystem {
 }
 
 func (this *RenderSystem) Initialize() {
+	// Create windows and what not
 	this.setup()
 
 	this.ProcessFunc = this.ProcessObject
 
 	// Interested in objects with aspect and render data
-	this.SetDataInterest(dataManager.Get(new(RenderData)))
-	this.SetDataInterest(dataManager.Get(new(AspectData)))
+	this.SetDataInterest(gDataManager.Get(new(RenderData)))
+	this.SetDataInterest(gDataManager.Get(new(AspectData)))
 }
 
 func (this *RenderSystem) ProcessObject(object *Object) {

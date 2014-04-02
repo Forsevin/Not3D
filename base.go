@@ -5,27 +5,23 @@ import "fmt"
 // Having the data manager a global variable will make it a bit easier
 // we wont need to pass it arounds to every system or Data containers (it could be retrieved from base but fuck that)
 var (
-	dataManager *DataManager
+	gDataManager *DataManager
 )
 
 // $ activeScene - The currently in use
 // $ scenes - Avaible scenes
-// $ dataManager - Use this to initialize data containers
 // $ globalSystems - Systems that will be processed in every scene
 type Base struct {
 	activeScene   *Scene
 	scenes        map[string]*Scene
-	dataManger    *DataManager
 	globalSystems []ISystem
 }
 
 func NewBase() *Base {
 	var base Base
 
-	base.dataManger = NewDataManager()
+	gDataManager = NewDataManager()
 	base.scenes = make(map[string]*Scene)
-
-	dataManager = base.DataManager()
 
 	// Base systems
 	// The most important system, handles both the rendering of objects and
@@ -41,11 +37,6 @@ func NewBase() *Base {
 
 	return &base
 
-}
-
-// DataManager hold unique ids for each data
-func (this *Base) DataManager() *DataManager {
-	return this.dataManger
 }
 
 func (this *Base) Process() {
