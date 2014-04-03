@@ -3,7 +3,7 @@ Oden
 
 A half done kinda working game engine for Go 
 
-Depends on these packages: github.com/willf/bitset, github.com/robertkrimen/otto
+Depends on these packages: github.com/willf/bitset, github.com/robertkrimen/otto, github.com/jackyb/go-sdl2/sdl
 
 notes
 =====
