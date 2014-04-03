@@ -1,7 +1,9 @@
 package oden
 
 import (
+	"fmt"
 	"github.com/willf/bitset"
+	"reflect"
 )
 
 // System interface, all systems to be processed need to implement these methods
@@ -36,6 +38,7 @@ type System struct {
 
 func (this *System) Process() {
 	if this.ProcessFunc == nil {
+		fmt.Println("For type:", reflect.TypeOf(this))
 		panic("ProcessFunc not set, you may not have inititalized a system or not set the function at all")
 	}
 	for _, object := range this.activeObjects {

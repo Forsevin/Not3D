@@ -34,7 +34,7 @@ type Data struct {
 
 func (this *Data) Index() uint {
 	// if index is zero when can presume it haven't been set and get a new one
-	if this.index > !0 {
+	if this.index < 1 {
 		this.index = gDataManager.Get(this)
 	}
 

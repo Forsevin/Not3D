@@ -11,10 +11,12 @@ var (
 // $ activeScene - The currently in use
 // $ scenes - Avaible scenes
 // $ globalSystems - Systems that will be processed in every scene
+// $ Renderer - Renders shit 'n stuff
 type Base struct {
 	activeScene   *Scene
 	scenes        map[string]*Scene
 	globalSystems []ISystem
+	renderer      *Renderer
 }
 
 func NewBase() *Base {
@@ -22,6 +24,8 @@ func NewBase() *Base {
 
 	gDataManager = NewDataManager()
 	base.scenes = make(map[string]*Scene)
+
+	base.SetRenderer(NewRenderer())
 
 	// Base systems
 	// The most important system, handles both the rendering of objects and
@@ -60,13 +64,17 @@ func (this *Base) AddScene(identifier string, scene *Scene) {
 }
 
 // Get scene by identifier
-func (this *Base) GetScene(identifier string) *Scene {
+func (this *Base) Scene(identifier string) *Scene {
 	return this.scenes[identifier]
 }
 
 // Get currently active scene
-func (this *Base) GetActiveScene() *Scene {
+func (this *Base) ActiveScene() *Scene {
 	return this.activeScene
+}
+
+func (this *Base) DeleteScene(identifier string) {
+	delete(this.scenes, identifier)
 }
 
 // Add a global system, this system will be proccesed in all scenes
@@ -83,6 +91,10 @@ func (this *Base) UpdateSystemObjectPossesions() {
 			system.Check(object)
 		}
 	}
+}
+
+func (this *Base) SetRenderer(renderer *Renderer) {
+	this.renderer = renderer
 }
 
 // Just write what the fuck is in this scene
