@@ -1,6 +1,7 @@
 package oden
 
 import (
+	"github.com/jackyb/go-sdl2/sdl"
 	"log"
 	"os"
 )
@@ -8,7 +9,7 @@ import (
 // Having the data manager a global variable will make it a bit easier
 // we wont need to pass it arounds to every system or Data containers (it could be retrieved from base but fuck that)
 var (
-	gLogger *log.Logger = log.New(os.Stdout, "[oden] ", 0)
+	gLogger      *log.Logger = log.New(os.Stdout, "[oden] ", 0)
 	gDataManager *DataManager
 )
 
@@ -16,17 +17,17 @@ var (
 // $ scenes - Avaible scenes
 // $ globalSystems - Systems that will be processed in every scene
 // $ Renderer - Renders shit 'n stuff
+// $ quit - run while not quitting
 type Base struct {
 	activeScene   *Scene
 	scenes        map[string]*Scene
 	globalSystems []ISystem
 	renderer      *Renderer
+	quit          bool
 }
 
-func NewBase() *Base {
+func New() *Base {
 	var base Base
-
-	gLogger.Println("Testing logging")
 
 	gDataManager = NewDataManager()
 	base.scenes = make(map[string]*Scene)
@@ -36,7 +37,7 @@ func NewBase() *Base {
 	// Base systems
 	// The most important system, handles both the rendering of objects and
 	// windows managments, surfaces etc.
-	base.AddGlobalSystem(NewRenderSystem()).Initialize()
+	base.AddGlobalSystem(NewRenderSystem(base.renderer)).Initialize()
 	// Allow objects to be manipulated by scripts (using Otto javascript implementation)
 	base.AddGlobalSystem(NewScriptSystem()).Initialize()
 
@@ -57,6 +58,16 @@ func (this *Base) Process() {
 	for _, system := range this.globalSystems {
 		system.Process()
 	}
+}
+
+// Use default delta delayment
+func (this *Base) DeltaSleep() {
+	sdl.Delay(16)
+}
+
+// Set the window title
+func (this *Base) SetWindowTitle(title string) {
+	this.renderer.SetWindowTitle(title)
 }
 
 // Set/switch the active scene
@@ -89,6 +100,25 @@ func (this *Base) AddGlobalSystem(system ISystem) ISystem {
 	return system
 }
 
+// Start the game loop
+func (this *Base) Loop() {
+	var event sdl.Event
+
+	// Check for events in interest
+	for this.quit != true {
+		for event = sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
+			switch event.(type) {
+			case *sdl.QuitEvent:
+				this.quit = true
+
+			}
+		}
+
+		this.Process()
+		sdl.Delay(160)
+	}
+}
+
 // Check objects towards systems
 func (this *Base) UpdateSystemObjectPossesions() {
 	for _, system := range this.globalSystems {
@@ -99,6 +129,22 @@ func (this *Base) UpdateSystemObjectPossesions() {
 	}
 }
 
+func (this *Base) Log(msg string) {
+	gLogger.Print(msg)
+}
+
+func (this *Base) SetQuit(quit bool) {
+	this.quit = quit
+}
+
+func (this *Base) Quit() bool {
+	return this.quit
+}
+
 func (this *Base) SetRenderer(renderer *Renderer) {
 	this.renderer = renderer
+}
+
+func (this *Base) Error() string {
+	return sdl.GetError().Error()
 }
