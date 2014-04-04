@@ -4,7 +4,6 @@ import "github.com/jackyb/go-sdl2/sdl"
 
 type Renderer struct {
 	window   *sdl.Window
-	surface  *sdl.Surface
 	renderer *sdl.Renderer
 }
 
@@ -24,7 +23,6 @@ func NewRenderer() *Renderer {
 
 	return &Renderer{
 		window:   window,
-		surface:  window.GetSurface(),
 		renderer: renderer,
 	}
 }
@@ -39,7 +37,10 @@ func (this *Renderer) DrawSprite(tex Texture2D) {
 
 // For earily testing, might still be usable
 func (this *Renderer) DrawRect(x, y, w, h int32) {
-	rect := sdl.Rect{w, h, x, y}
-	this.surface.FillRect(&rect, 0xffff0000)
-	this.window.UpdateSurface()
+	rect := sdl.Rect{x, y, w, h}
+	this.renderer.SetDrawColor(0, 0, 0, 0)
+	this.renderer.Clear()
+	this.renderer.SetDrawColor(255, 0, 255, 255)
+	this.renderer.FillRect(&rect)
+	this.renderer.Present()
 }

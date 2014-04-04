@@ -2,17 +2,17 @@ package oden
 
 import (
 	"fmt"
-	"github.com/robertkrimen/otto"
+	//"github.com/robertkrimen/otto"
 )
 
 type ScriptSystem struct {
 	System
-	runtime *otto.Otto
+	//runtime *otto.Otto
 }
 
 func NewScriptSystem() *ScriptSystem {
 	return &ScriptSystem{
-		runtime: otto.New(),
+	//runtime: otto.New(),
 	}
 }
 
