@@ -1,10 +1,14 @@
 package oden
 
-import "fmt"
+import (
+	"log"
+	"os"
+)
 
 // Having the data manager a global variable will make it a bit easier
 // we wont need to pass it arounds to every system or Data containers (it could be retrieved from base but fuck that)
 var (
+	gLogger *log.Logger = log.New(os.Stdout, "[oden] ", 0)
 	gDataManager *DataManager
 )
 
@@ -21,6 +25,8 @@ type Base struct {
 
 func NewBase() *Base {
 	var base Base
+
+	gLogger.Println("Testing logging")
 
 	gDataManager = NewDataManager()
 	base.scenes = make(map[string]*Scene)
@@ -95,12 +101,4 @@ func (this *Base) UpdateSystemObjectPossesions() {
 
 func (this *Base) SetRenderer(renderer *Renderer) {
 	this.renderer = renderer
-}
-
-// Just write what the fuck is in this scene
-func (this *Base) DebugScene() {
-	fmt.Println(this.activeScene.Objects())
-	for _, object := range this.activeScene.Objects() {
-		fmt.Println(object.Bits())
-	}
 }
