@@ -59,12 +59,11 @@ func (this *System) SetBase(base *Base) {
 func (this *System) Check(object *Object) {
 	objectBits := object.Bits()
 	var interested bool = true
-
+	
 	for i, v := this.aspect.NextSet(0); v != false; i, v = this.aspect.NextSet(i) {
 		if !objectBits.Test(i) {
 			interested = false
 		}
-
 		i += 1
 	}
 	if interested {
