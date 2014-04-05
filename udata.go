@@ -1,9 +1,27 @@
 package oden
 
 // Some default data often used
+
+// Data for scripts
 type ScriptData struct {
 	Data
 	scripts []string
+}
+
+func NewScriptData() *ScriptData {
+	return &ScriptData{}
+}
+
+// Sprite for rendering
+type SpriteData struct {
+	Data
+	Asset string
+}
+
+func NewSpriteData(asset string) *SpriteData {
+	return &SpriteData{
+		Asset: asset,
+	}
 }
 
 // Aspect contains data for X and Y cordinates and Width and Height for rendering

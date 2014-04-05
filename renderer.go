@@ -31,10 +31,6 @@ func (this *Renderer) SetWindowTitle(title string) {
 	this.window.SetTitle(title)
 }
 
-func (this *Renderer) DrawSprite(tex Texture2D) {
-
-}
-
 // For earily testing, might still be usable
 func (this *Renderer) DrawRect(x, y, w, h int32) {
 	rect := sdl.Rect{x, y, w, h}
@@ -43,4 +39,19 @@ func (this *Renderer) DrawRect(x, y, w, h int32) {
 	this.renderer.SetDrawColor(255, 0, 255, 255)
 	this.renderer.FillRect(&rect)
 	this.renderer.Present()
+}
+
+func (this *Renderer) DrawSprite(x, y, w, h int32, asset *sdl.Surface) {
+	texture := this.renderer.CreateTextureFromSurface(asset)
+	if texture == nil {
+		gLogger.Fatal("Coudln't load image")
+	}
+
+	src := sdl.Rect{0, 0, 512, 512}
+	dst := sdl.Rect{100, 50, 512, 512}
+
+	this.renderer.Clear()
+	this.renderer.Copy(texture, &src, &dst)
+	this.renderer.Present()
+
 }

@@ -22,6 +22,7 @@ type Base struct {
 	activeScene   *Scene
 	scenes        map[string]*Scene
 	globalSystems []ISystem
+	assets        *Assets
 	renderer      *Renderer
 	quit          bool
 }
@@ -33,11 +34,12 @@ func New() *Base {
 	base.scenes = make(map[string]*Scene)
 
 	base.SetRenderer(NewRenderer())
+	base.assets = NewAssets()
 
 	// Base systems
 	// The most important system, handles both the rendering of objects and
 	// windows managments, surfaces etc.
-	base.AddGlobalSystem(NewRenderSystem(base.renderer)).Initialize()
+	base.AddGlobalSystem(NewRenderSystem(base.renderer, base.Assets())).Initialize()
 	// Allow objects to be manipulated by scripts (using Otto javascript implementation)
 	base.AddGlobalSystem(NewScriptSystem()).Initialize()
 
@@ -94,6 +96,14 @@ func (this *Base) DeleteScene(identifier string) {
 	delete(this.scenes, identifier)
 }
 
+func (this *Base) SetAssets(assets *Assets) {
+	this.assets = assets
+}
+
+func (this *Base) Assets() *Assets {
+	return this.assets
+}
+
 // Add a global system, this system will be proccesed in all scenes
 func (this *Base) AddGlobalSystem(system ISystem) ISystem {
 	this.globalSystems = append(this.globalSystems, system)
@@ -110,7 +120,6 @@ func (this *Base) Loop() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
 				this.quit = true
-
 			}
 		}
 
