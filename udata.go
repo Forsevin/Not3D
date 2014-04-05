@@ -1,5 +1,7 @@
 package oden
 
+import "github.com/robertkrimen/otto"
+
 // Data for X, Y cordinates, width and height and angle for rotation
 type TransformComponent struct {
 	Component
@@ -18,6 +20,7 @@ func NewTransformComponent(x, y int32) *TransformComponent {
 
 // The camera used by rendersystem
 type CameraComponent struct {
+	Component
 }
 
 func NewCameraComponent() *CameraComponent {
@@ -35,9 +38,14 @@ func NewSpriteComponent() *SpriteComponent {
 }
 
 // Data for the Gel script system
-type GelScriptComponent struct {
+type ScriptComponent struct {
+	Component
+	// Script loaded either manually or by base.Assets
+	Src string
+	// So we wont need to run the same script again and again
+	object *otto.Object
 }
 
-func NewGelScriptComponent() *GelScriptComponent {
-	return &GelScriptComponent{}
+func NewScriptComponent() *ScriptComponent {
+	return &ScriptComponent{}
 }

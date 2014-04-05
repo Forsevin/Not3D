@@ -3,7 +3,7 @@ package oden
 import "github.com/jackyb/go-sdl2/sdl"
 
 type Texture2D struct {
-	texture *sdl.Texture
+	Texture *sdl.Texture
 }
 
 type SpriteBatch struct {
@@ -23,9 +23,9 @@ func (this *SpriteBatch) Begin() {
 
 func (this *SpriteBatch) Draw(texture *Texture2D, x, y, w, h int32) {
 	src := sdl.Rect{0, 0, 512, 512}
-	dst := sdl.Rect{100, 50, 512, 512}
+	dst := sdl.Rect{x, y, w, h}
 
-	this.graphics.renderer.Copy(texture.texture, &src, &dst)
+	this.graphics.renderer.Copy(texture.Texture, &src, &dst)
 }
 
 // Draw our shit

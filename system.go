@@ -41,6 +41,7 @@ func (this *System) Process() {
 		fmt.Println("For type:", reflect.TypeOf(this))
 		panic("ProcessFunc not set, you may not have inititalized a system or not set the function at all")
 	}
+
 	for _, object := range this.activeObjects {
 		this.ProcessFunc(object)
 	}

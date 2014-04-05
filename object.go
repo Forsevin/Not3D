@@ -8,19 +8,26 @@ import (
 type Object struct {
 	data map[uint]IComponent
 	bits bitset.BitSet
+	name string
 }
 
 func NewObject() *Object {
 	return &Object{
 		data: make(map[uint]IComponent),
+		name: "NewObject",
 	}
+}
+
+func (this *Object) Name() string {
+	return this.Name()
 }
 
 // Add data container to this object with its index to use
 // later for system processing
-func (this *Object) AddComponent(data IComponent) {
-	this.data[gDataManager.Get(data)] = data
-	this.bits.Set(gDataManager.Get(data))
+func (this *Object) AddComponent(component IComponent) IComponent {
+	this.data[gDataManager.Get(component)] = component
+	this.bits.Set(gDataManager.Get(component))
+	return component
 }
 
 func (this *Object) Bits() *bitset.BitSet {

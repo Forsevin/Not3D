@@ -61,8 +61,11 @@ func New() *Base {
 	// Allow objects to be manipulated by scripts (using Otto javascript implementation)
 	base.AddGlobalSystem(NewScriptSystem()).Initialize()
 
-	// Set base scene
+	// Set base scene with a camera
+	camera := base.CreateObject()
+	camera.AddComponent(NewCameraComponent())
 	scene := NewScene()
+	scene.AddObject(camera)
 	base.AddScene("main", scene)
 	base.SetActiveScene("main")
 
@@ -94,7 +97,7 @@ func (this *Base) CreateObject() *Object {
 
 // Set the window title
 func (this *Base) SetWindowTitle(title string) {
-	//this.renderer.SetWindowTitle(title)
+	this.graphics.window.SetTitle(title)
 }
 
 // Set/switch the active scene

@@ -16,6 +16,16 @@ func (this *Scene) AddObject(object *Object) {
 	this.objects = append(this.objects, object)
 }
 
+// Get a object by its name, pretty costly so use it wisely
+func (this *Scene) ObjectByName(name string) *Object {
+	for _, obj := range this.objects {
+		if obj.Name() == name {
+			return obj
+		}
+	}
+	return nil
+}
+
 // Return all objects in this scene
 func (this *Scene) Objects() []*Object {
 	return this.objects
