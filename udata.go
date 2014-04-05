@@ -1,50 +1,42 @@
 package oden
 
-// Some default data often used
-
-// Data for scripts
-type ScriptData struct {
-	Data
-	scripts []string
+// Data for X, Y cordinates, width and height and angle for rotation
+type TransformComponent struct {
+	Component
+	x, y  int32
+	w, h  int32
+	angle int32
 }
 
-func NewScriptData() *ScriptData {
-	return &ScriptData{}
-}
-
-// Sprite for rendering
-type SpriteData struct {
-	Data
-	Asset string
-}
-
-func NewSpriteData(asset string) *SpriteData {
-	return &SpriteData{
-		Asset: asset,
+func NewTransformComponent(x, y int32) *TransformComponent {
+	return &TransformComponent{
+		x:     x,
+		y:     y,
+		angle: 0,
 	}
 }
 
-// Aspect contains data for X and Y cordinates and Width and Height for rendering
-type AspectData struct {
-	Data
-	x, y, w, h int32
+// The camera used by rendersystem
+type CameraComponent struct {
 }
 
-func NewAspectData(x, y, w, h int32) *AspectData {
-	return &AspectData{
-		x: x,
-		y: y,
-		w: w,
-		h: h,
-	}
+func NewCameraComponent() *CameraComponent {
+	return &CameraComponent{}
 }
 
-// Just contain some general data from the render system
-type RenderData struct {
-	Data
-	visible bool
+// Data for textures used for rendering
+type SpriteComponent struct {
+	texture Texture2D
 }
 
-func NewRenderData() *RenderData {
-	return &RenderData{}
+func NewSpriteComponent() *SpriteComponent {
+	return &SpriteComponent{}
+}
+
+// Data for the Gel script system
+type GelScriptComponent struct {
+}
+
+func NewGelScriptComponent() *GelScriptComponent {
+	return &GelScriptComponent{}
 }

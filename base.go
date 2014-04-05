@@ -13,6 +13,19 @@ var (
 	gDataManager *DataManager
 )
 
+// Until we find a better place to hold these variables we'll keep em here
+// We can take some advantage of this dirty little struct and pass it to required system instead of a raw window however
+// if some other shit need to be added we'll just add it here and it will be avaible wherever it has been passed
+type Graphics struct {
+	window *sdl.Window
+}
+
+func NewGraphics() *Graphics {
+	return &Graphics{
+		window: sdl.CreateWindow("Oden", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, 640, 480, sdl.WINDOW_SHOWN),
+	}
+}
+
 // $ activeScene - The currently in use
 // $ scenes - Avaible scenes
 // $ globalSystems - Systems that will be processed in every scene
@@ -23,7 +36,7 @@ type Base struct {
 	scenes        map[string]*Scene
 	globalSystems []ISystem
 	assets        *Assets
-	renderer      *Renderer
+	graphics      *Graphics
 	quit          bool
 }
 
@@ -33,15 +46,17 @@ func New() *Base {
 	gDataManager = NewDataManager()
 	base.scenes = make(map[string]*Scene)
 
-	base.SetRenderer(NewRenderer())
 	base.assets = NewAssets()
 
 	// Base systems
 	// The most important system, handles both the rendering of objects and
 	// windows managments, surfaces etc.
-	base.AddGlobalSystem(NewRenderSystem(base.renderer, base.Assets())).Initialize()
+	base.AddGlobalSystem(NewRenderSystem()).Initialize()
 	// Allow objects to be manipulated by scripts (using Otto javascript implementation)
 	base.AddGlobalSystem(NewScriptSystem()).Initialize()
+
+	// Set up our window
+	base.SetGraphics(NewGraphics())
 
 	// Set base scene
 	scene := NewScene()
@@ -67,9 +82,16 @@ func (this *Base) DeltaSleep() {
 	sdl.Delay(16)
 }
 
+// Create a new object (note: this doesn't add it to the scene)
+func (this *Base) CreateObject() *Object {
+	object := NewObject()
+	object.AddComponent(NewTransformComponent(0, 0))
+	return object
+}
+
 // Set the window title
 func (this *Base) SetWindowTitle(title string) {
-	this.renderer.SetWindowTitle(title)
+	//this.renderer.SetWindowTitle(title)
 }
 
 // Set/switch the active scene
@@ -142,16 +164,20 @@ func (this *Base) Log(msg string) {
 	gLogger.Print(msg)
 }
 
+func (this *Base) SetGraphics(graphics *Graphics) {
+	this.graphics = graphics
+}
+
+func (this *Base) Graphics() *Graphics {
+	return this.graphics
+}
+
 func (this *Base) SetQuit(quit bool) {
 	this.quit = quit
 }
 
 func (this *Base) Quit() bool {
 	return this.quit
-}
-
-func (this *Base) SetRenderer(renderer *Renderer) {
-	this.renderer = renderer
 }
 
 func (this *Base) Error() string {

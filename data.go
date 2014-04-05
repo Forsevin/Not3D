@@ -14,7 +14,7 @@ func NewDataManager() *DataManager {
 	}
 }
 
-func (this *DataManager) Get(data IData) uint {
+func (this *DataManager) Get(data IComponent) uint {
 	if _, ok := this.indexes[reflect.TypeOf(data)]; !ok {
 		this.indexes[reflect.TypeOf(data)] = this.uindex
 	}
@@ -23,16 +23,16 @@ func (this *DataManager) Get(data IData) uint {
 	return this.indexes[reflect.TypeOf(data)]
 }
 
-type IData interface {
+type IComponent interface {
 	Index() uint
 	SetIndex(index uint)
 }
 
-type Data struct {
+type Component struct {
 	index uint
 }
 
-func (this *Data) Index() uint {
+func (this *Component) Index() uint {
 	// if index is zero when can presume it haven't been set and get a new one
 	if this.index < 1 {
 		this.index = gDataManager.Get(this)
@@ -41,6 +41,6 @@ func (this *Data) Index() uint {
 	return this.index
 }
 
-func (this *Data) SetIndex(index uint) {
+func (this *Component) SetIndex(index uint) {
 	this.index = index
 }

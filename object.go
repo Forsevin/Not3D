@@ -1,25 +1,24 @@
 package oden
 
 import (
-	"fmt"
 	"github.com/willf/bitset"
 	"reflect"
 )
 
 type Object struct {
-	data map[uint]IData
+	data map[uint]IComponent
 	bits bitset.BitSet
 }
 
 func NewObject() *Object {
 	return &Object{
-		data: make(map[uint]IData),
+		data: make(map[uint]IComponent),
 	}
 }
 
 // Add data container to this object with its index to use
 // later for system processing
-func (this *Object) AddData(data IData) {
+func (this *Object) AddComponent(data IComponent) {
 	this.data[gDataManager.Get(data)] = data
 	this.bits.Set(gDataManager.Get(data))
 }
@@ -29,7 +28,7 @@ func (this *Object) Bits() *bitset.BitSet {
 }
 
 // Return data by its type name (the most inefficent)
-func (this *Object) DataByName(name string) IData {
+func (this *Object) ComponentByName(name string) IComponent {
 	for _, data := range this.data {
 		if reflect.TypeOf(data).String() == name {
 			return data
@@ -39,7 +38,7 @@ func (this *Object) DataByName(name string) IData {
 }
 
 // Return data by its type (more efficent)
-func (this *Object) DataByType(data IData) IData {
+func (this *Object) ComponentByType(data IComponent) IComponent {
 	datatype := reflect.TypeOf(data)
 	for _, data := range this.data {
 		if datatype == reflect.TypeOf(data) {
@@ -51,12 +50,6 @@ func (this *Object) DataByType(data IData) IData {
 }
 
 // Return data by its data index (the most efficent)
-func (this *Object) DataByIndex(index uint) IData {
+func (this *Object) ComponentByIndex(index uint) IComponent {
 	return this.data[index]
-}
-
-func (this *Object) DebugData() {
-	for k, data := range this.data {
-		fmt.Println("[", k, "]", reflect.TypeOf(data).String())
-	}
 }
