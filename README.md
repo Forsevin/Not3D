@@ -1,14 +1,14 @@
 Oden
 ====
 
-A half done kinda working game engine for Go 
+Oden is a open source cross-platform game Engine written in Go (if you haven't guessed).
 
-Depends on these packages: github.com/willf/bitset, github.com/robertkrimen/otto, github.com/jackyb/go-sdl2/sdl
+It built on the Entity Component System design pattern, but does some things lazy (e.g storing Components in the objects/entities). The goal is a working game Engine useful for general purposes and without having to write any additional systems or Components (though, for speed this might be useful). To achive this Oden will use the embedable language Gel which hopefully meet the needs of a scripting language for a game Engine, both by usability and speed.
 
-notes
-=====
-* Is a entity component system framework, but really isn't
-* Probably very inefficent
-* There's a lot of shit comments only put there until something better is written
-* Only renderSystem and ScriptSystem exists, but neither of them do anything, the fundamental for script system should be pretty easy to implement 
-* Uses Otto for scripting, in other words Javascript, but will be referred to as just Otto to cause unnecessary confusion
+
+
+###installation
+
+`$ go get github.com/Forsevin/oden`
+
+Requires SDL2
