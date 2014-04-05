@@ -53,3 +53,8 @@ func (this *Object) ComponentByType(data IComponent) IComponent {
 func (this *Object) ComponentByIndex(index uint) IComponent {
 	return this.data[index]
 }
+
+// Simple return
+func (this *Object) Component(component IComponent) IComponent {
+	return this.data[gDataManager.Get(component)]
+}

@@ -7,13 +7,15 @@ import "github.com/jackyb/go-sdl2/sdl"
 // we'll have to use BMPs' :(
 
 type Assets struct {
-	imageAssets map[string]*sdl.Surface
+	imageAssets map[string]*sdl.Texture
 	soundAssets map[string]int
+	graphics    *Graphics
 }
 
-func NewAssets() *Assets {
+func NewAssets(graphics *Graphics) *Assets {
 	return &Assets{
-		imageAssets: make(map[string]*sdl.Surface),
+		imageAssets: make(map[string]*sdl.Texture),
+		graphics:    graphics,
 	}
 }
 
@@ -23,9 +25,14 @@ func (this *Assets) LoadImageAsset(file string) {
 		// Maybe we'll load some nifty image here instead
 		return
 	}
-	this.imageAssets[file] = img
+	this.imageAssets[file] = this.graphics.renderer.CreateTextureFromSurface(img)
 }
 
-func (this *Assets) ImageAsset(name string) *sdl.Surface {
+func (this *Assets) ImageAsset(name string) *sdl.Texture {
 	return this.imageAssets[name]
+}
+
+func (this *Assets) Set(object *Object, asset string) {
+	sprite := object.Component(new(SpriteComponent)).(*SpriteComponent)
+	sprite.texture.texture = this.ImageAsset(asset)
 }

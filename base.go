@@ -17,12 +17,15 @@ var (
 // We can take some advantage of this dirty little struct and pass it to required system instead of a raw window however
 // if some other shit need to be added we'll just add it here and it will be avaible wherever it has been passed
 type Graphics struct {
-	window *sdl.Window
+	window   *sdl.Window
+	renderer *sdl.Renderer
 }
 
 func NewGraphics() *Graphics {
+	window := sdl.CreateWindow("Oden", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, 640, 480, sdl.WINDOW_SHOWN)
 	return &Graphics{
-		window: sdl.CreateWindow("Oden", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, 640, 480, sdl.WINDOW_SHOWN),
+		window:   window,
+		renderer: sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED),
 	}
 }
 
@@ -43,20 +46,20 @@ type Base struct {
 func New() *Base {
 	var base Base
 
+	// Set up our window
+	base.SetGraphics(NewGraphics())
+
 	gDataManager = NewDataManager()
 	base.scenes = make(map[string]*Scene)
 
-	base.assets = NewAssets()
+	base.assets = NewAssets(base.Graphics())
 
 	// Base systems
 	// The most important system, handles both the rendering of objects and
 	// windows managments, surfaces etc.
-	base.AddGlobalSystem(NewRenderSystem()).Initialize()
+	base.AddGlobalSystem(NewRenderSystem(base.Graphics())).Initialize()
 	// Allow objects to be manipulated by scripts (using Otto javascript implementation)
 	base.AddGlobalSystem(NewScriptSystem()).Initialize()
-
-	// Set up our window
-	base.SetGraphics(NewGraphics())
 
 	// Set base scene
 	scene := NewScene()

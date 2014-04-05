@@ -18,7 +18,7 @@ type ISystem interface {
 	Initialize()
 	ProcessObject(object *Object)
 	Check(object *Object)
-	SetDataInterest(index uint)
+	SetComponentInterest(component IComponent)
 	Process()
 	RemoveObjects()
 	SetBase(base *Base)
@@ -46,8 +46,8 @@ func (this *System) Process() {
 	}
 }
 
-func (this *System) SetDataInterest(index uint) {
-	this.aspect.Set(index)
+func (this *System) SetComponentInterest(component IComponent) {
+	this.aspect.Set(gDataManager.Get(component))
 }
 
 func (this *System) SetBase(base *Base) {
@@ -59,7 +59,7 @@ func (this *System) SetBase(base *Base) {
 func (this *System) Check(object *Object) {
 	objectBits := object.Bits()
 	var interested bool = true
-	
+
 	for i, v := this.aspect.NextSet(0); v != false; i, v = this.aspect.NextSet(i) {
 		if !objectBits.Test(i) {
 			interested = false
