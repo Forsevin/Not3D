@@ -12,3 +12,6 @@ It built on the Entity Component System design pattern, but does some things laz
 `$ go get github.com/Forsevin/oden`
 
 Requires SDL2
+
+###license
+GNU General Public License (GPL)
