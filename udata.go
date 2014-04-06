@@ -37,6 +37,10 @@ func NewSpriteComponent() *SpriteComponent {
 	return &SpriteComponent{}
 }
 
+type SpriteSetComponent struct {
+	Set map[string]Texture2D
+}
+
 // Data for the Gel script system
 type ScriptComponent struct {
 	Component

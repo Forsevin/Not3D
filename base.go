@@ -59,7 +59,9 @@ func New() *Base {
 	// windows managments, surfaces etc.
 	base.AddGlobalSystem(NewRenderSystem(base.Graphics())).Initialize()
 	// Allow objects to be manipulated by scripts (using Otto javascript implementation)
-	base.AddGlobalSystem(NewScriptSystem()).Initialize()
+	// We'll also create a Application Interface for it so it can work with our engine
+	api := NewApi(&base)
+	base.AddGlobalSystem(NewScriptSystem(api)).Initialize()
 
 	// Set base scene with a camera
 	camera := base.CreateObject()
@@ -184,6 +186,10 @@ func (this *Base) SetQuit(quit bool) {
 
 func (this *Base) Quit() bool {
 	return this.quit
+}
+
+func (this *Base) SDLLog(msg string) {
+	sdl.Log("testing")
 }
 
 func (this *Base) Error() string {
