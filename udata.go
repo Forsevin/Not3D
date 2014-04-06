@@ -46,8 +46,9 @@ type ScriptComponent struct {
 	Component
 	// Script loaded either manually or by base.Assets
 	Src string
-	// So we wont need to run the same script again and again
-	object *otto.Object
+	// Every script have its own runtime (?)
+	runtime *otto.Otto
+	object  *otto.Object
 }
 
 func NewScriptComponent() *ScriptComponent {

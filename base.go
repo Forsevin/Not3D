@@ -40,6 +40,7 @@ type Base struct {
 	globalSystems []ISystem
 	assets        *Assets
 	graphics      *Graphics
+	input         *Input
 	quit          bool
 }
 
@@ -142,18 +143,13 @@ func (this *Base) AddGlobalSystem(system ISystem) ISystem {
 
 // Start the game loop
 func (this *Base) Loop() {
-	var event sdl.Event
-
-	// Check for events in interest
-	for this.quit != true {
-		for event = sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch event.(type) {
-			case *sdl.QuitEvent:
-				this.quit = true
-			}
+	for this.quit == false {
+		if this.input.Process() == true {
+			this.SetQuit(true)
 		}
 
 		this.Process()
+
 		sdl.Delay(160)
 	}
 }
@@ -184,12 +180,20 @@ func (this *Base) SetQuit(quit bool) {
 	this.quit = quit
 }
 
+func (this *Base) Input() *Input {
+	return this.input
+}
+
+func (this *Base) SetInput(input *Input) {
+	this.input = input
+}
+
 func (this *Base) Quit() bool {
 	return this.quit
 }
 
 func (this *Base) SDLLog(msg string) {
-	sdl.Log("testing")
+
 }
 
 func (this *Base) Error() string {

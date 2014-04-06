@@ -23,7 +23,6 @@ func (this *RenderSystem) ProcessObject(object *Object) {
 	transform := object.Component(new(TransformComponent)).(*TransformComponent)
 
 	this.spriteBatch.Begin()
-	this.spriteBatch.Draw(&sprite.Texture, transform.X, transform.Y, 10*10, 15*10)
+	this.spriteBatch.Draw(&sprite.Texture, transform.X, transform.Y, 10, 15)
 	this.spriteBatch.End()
-	transform.X += 5
 }
