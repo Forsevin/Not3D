@@ -18,6 +18,14 @@ func (this *ScriptSystem) Initialize() {
 	this.SetComponentInterest(new(ScriptComponent))
 }
 
+func (this *ScriptSystem) Begin() {
+
+}
+
+func (this *ScriptSystem) End() {
+
+}
+
 // Generally, only the update method in source is called
 func (this *ScriptSystem) ProcessObject(object *Object) {
 	script := object.Component(new(ScriptComponent)).(*ScriptComponent)

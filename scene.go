@@ -1,5 +1,7 @@
 package oden
 
+import "fmt"
+
 // Scene contains the data, upon selected  Base
 // will take data from the scene and send to systems
 
@@ -29,4 +31,10 @@ func (this *Scene) ObjectByName(name string) *Object {
 // Return all objects in this scene
 func (this *Scene) Objects() []*Object {
 	return this.objects
+}
+
+func (this *Scene) Debug() {
+	for k, v := range this.objects {
+		fmt.Println(k, v)
+	}
 }

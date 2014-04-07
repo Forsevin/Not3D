@@ -5,8 +5,7 @@ import "github.com/robertkrimen/otto"
 // Interface for Otto
 
 type Api struct {
-	base  *Base
-	input *Input
+	base *Base
 }
 
 func NewApi(base *Base) *Api {
@@ -19,6 +18,7 @@ func NewApi(base *Base) *Api {
 func (this *Api) InitializeRuntime(runtime *otto.Otto, object *Object) {
 	runtime.Set("engine", NewEngineInterface(this.base))
 	runtime.Set("object", NewObjectInterface(object))
+	runtime.Set("input", NewInputInterface(this.base.Input()))
 }
 
 //// ENGINE INTERFACE
@@ -40,6 +40,13 @@ func (this *EngineInterface) Quit(call otto.FunctionCall) otto.Value {
 	return otto.NullValue()
 }
 
+// Set base.quit to true
+func (this *EngineInterface) Print(call otto.FunctionCall) otto.Value {
+	msg, _ := call.Argument(0).ToString()
+	gLogger.Println(msg)
+	return otto.NullValue()
+}
+
 // Sets the active scene
 func (this *EngineInterface) SetActiveScene(call otto.FunctionCall) otto.Value {
 	scene, err := call.Argument(0).ToString()
@@ -51,6 +58,31 @@ func (this *EngineInterface) SetActiveScene(call otto.FunctionCall) otto.Value {
 	this.base.SetActiveScene(scene)
 
 	return otto.NullValue()
+}
+
+//// INPUT INTERFACE
+// For getting input
+type InputInterface struct {
+	input *Input
+}
+
+func NewInputInterface(input *Input) *InputInterface {
+	return &InputInterface{
+		input: input,
+	}
+}
+
+func (this *InputInterface) KeyDown(call otto.FunctionCall) otto.Value {
+	key, err := call.Argument(0).ToString()
+	if err != nil {
+		gLogger.Fatalln(err)
+	}
+	r, err := otto.ToValue(this.input.KeyDown(key))
+	if err != nil {
+		gLogger.Fatalln(err)
+	}
+	return r
+
 }
 
 //// TRANSFORM INTERFACE

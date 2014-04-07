@@ -19,7 +19,11 @@ func NewObject() *Object {
 }
 
 func (this *Object) Name() string {
-	return this.Name()
+	return this.name
+}
+
+func (this *Object) SetName(name string) {
+	this.name = name
 }
 
 // Add data container to this object with its index to use

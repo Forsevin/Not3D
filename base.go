@@ -4,6 +4,7 @@ import (
 	"github.com/jackyb/go-sdl2/sdl"
 	"log"
 	"os"
+	//"time"
 )
 
 // Having the data manager a global variable will make it a bit easier
@@ -54,7 +55,7 @@ func New() *Base {
 	base.scenes = make(map[string]*Scene)
 
 	base.assets = NewAssets(base.Graphics())
-
+	base.SetInput(NewInput())
 	// Base systems
 	// The most important system, handles both the rendering of objects and
 	// windows managments, surfaces etc.
@@ -65,7 +66,7 @@ func New() *Base {
 	base.AddGlobalSystem(NewScriptSystem(api)).Initialize()
 
 	// Set base scene with a camera
-	camera := base.CreateObject()
+	camera := base.CreateObject(0, 0)
 	camera.AddComponent(NewCameraComponent())
 	scene := NewScene()
 	scene.AddObject(camera)
@@ -82,7 +83,9 @@ func (this *Base) Process() {
 	this.UpdateSystemObjectPossesions()
 
 	for _, system := range this.globalSystems {
+		system.Begin()
 		system.Process()
+		system.End()
 	}
 }
 
@@ -92,9 +95,9 @@ func (this *Base) DeltaSleep() {
 }
 
 // Create a new object (note: this doesn't add it to the scene)
-func (this *Base) CreateObject() *Object {
+func (this *Base) CreateObject(x, y int32) *Object {
 	object := NewObject()
-	object.AddComponent(NewTransformComponent(0, 0))
+	object.AddComponent(NewTransformComponent(x, y))
 	return object
 }
 
@@ -150,15 +153,15 @@ func (this *Base) Loop() {
 
 		this.Process()
 
-		sdl.Delay(160)
+		sdl.Delay(16)
 	}
 }
 
 // Check objects towards systems
 func (this *Base) UpdateSystemObjectPossesions() {
 	for _, system := range this.globalSystems {
+		system.RemoveObjects()
 		for _, object := range this.activeScene.Objects() {
-			system.RemoveObjects()
 			system.Check(object)
 		}
 	}

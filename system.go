@@ -22,6 +22,8 @@ type ISystem interface {
 	Process()
 	RemoveObjects()
 	SetBase(base *Base)
+	Begin()
+	End()
 }
 
 // The base system (need to be "inherited")

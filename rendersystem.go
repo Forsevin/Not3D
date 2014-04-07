@@ -12,6 +12,14 @@ func NewRenderSystem(graphics *Graphics) *RenderSystem {
 	}
 }
 
+func (this *RenderSystem) Begin() {
+	this.spriteBatch.Begin()
+}
+
+func (this *RenderSystem) End() {
+	this.spriteBatch.End()
+}
+
 func (this *RenderSystem) Initialize() {
 	this.ProcessFunc = this.ProcessObject
 	this.SetComponentInterest(new(SpriteComponent))
@@ -21,8 +29,5 @@ func (this *RenderSystem) Initialize() {
 func (this *RenderSystem) ProcessObject(object *Object) {
 	sprite := object.Component(new(SpriteComponent)).(*SpriteComponent)
 	transform := object.Component(new(TransformComponent)).(*TransformComponent)
-
-	this.spriteBatch.Begin()
-	this.spriteBatch.Draw(&sprite.Texture, transform.X, transform.Y, 10, 15)
-	this.spriteBatch.End()
+	this.spriteBatch.Draw(&sprite.Texture, transform.X, transform.Y, 63, 87)
 }
