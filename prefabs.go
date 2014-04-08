@@ -1,4 +1,4 @@
-package oden
+package n3
 
 type PrefabFactory struct {
 	prefabs map[string]*Object

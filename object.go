@@ -1,4 +1,4 @@
-package oden
+package n3
 
 import (
 	"github.com/willf/bitset"
