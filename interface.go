@@ -40,7 +40,39 @@ func (this *EngineInterface) Quit(call otto.FunctionCall) otto.Value {
 	return otto.NullValue()
 }
 
-// Set base.quit to true
+// Spawn a object
+// @arg1 name of prefab
+// @arg2 x cordinates
+// @arg3 y cordinates
+func (this *EngineInterface) SpawnPrefab(call otto.FunctionCall) otto.Value {
+	prefabName, err := call.Argument(0).ToString()
+	if err != nil {
+		gLogger.Fatalln(err)
+	}
+
+	x, err := call.Argument(1).ToInteger()
+	if err != nil {
+		gLogger.Fatalln(err)
+	}
+
+	y, err := call.Argument(2).ToInteger()
+	if err != nil {
+		gLogger.Fatalln(err)
+	}
+
+	prefab := this.base.Prefabs().Prefab(prefabName)
+	if prefab == nil {
+		gLogger.Fatalln("Prefab", prefabName, "doesn't exit")
+	}
+	// This is a bit dirty don't you think?
+	cords := prefab.Component(new(TransformComponent)).(*TransformComponent)
+	cords.X = int32(x)
+	cords.Y = int32(y)
+
+	return otto.NullValue()
+}
+
+// Print something
 func (this *EngineInterface) Print(call otto.FunctionCall) otto.Value {
 	msg, _ := call.Argument(0).ToString()
 	gLogger.Println(msg)

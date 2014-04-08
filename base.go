@@ -7,16 +7,12 @@ import (
 	//"time"
 )
 
-// Having the data manager a global variable will make it a bit easier
-// we wont need to pass it arounds to every system or Data containers (it could be retrieved from base but fuck that)
+// Some global variables put here for convinience
 var (
 	gLogger      *log.Logger = log.New(os.Stdout, "[oden] ", 0)
 	gDataManager *DataManager
 )
 
-// Until we find a better place to hold these variables we'll keep em here
-// We can take some advantage of this dirty little struct and pass it to required system instead of a raw window however
-// if some other shit need to be added we'll just add it here and it will be avaible wherever it has been passed
 type Graphics struct {
 	window   *sdl.Window
 	renderer *sdl.Renderer
@@ -30,19 +26,23 @@ func NewGraphics() *Graphics {
 	}
 }
 
-// $ activeScene - The currently in use
-// $ scenes - Avaible scenes
-// $ globalSystems - Systems that will be processed in every scene
-// $ Renderer - Renders shit 'n stuff
-// $ quit - run while not quitting
 type Base struct {
-	activeScene   *Scene
-	scenes        map[string]*Scene
+	// The scene currently in use, objects will be added to this
+	activeScene *Scene
+	// Avaible scenes switchable by SetActiveScene
+	scenes map[string]*Scene
+	// Systems that will be processed in every scene
 	globalSystems []ISystem
-	assets        *Assets
-	graphics      *Graphics
-	input         *Input
-	quit          bool
+	// Asset mananger
+	assets *Assets
+	// Handles windows and other SDL related variables
+	graphics *Graphics
+	// Handles input
+	input *Input
+	// Manange objects to be set and retrieved later
+	prefabs *PrefabFactory
+	// Loops while false
+	quit bool
 }
 
 func New() *Base {
@@ -64,6 +64,8 @@ func New() *Base {
 	// We'll also create a Application Interface for it so it can work with our engine
 	api := NewApi(&base)
 	base.AddGlobalSystem(NewScriptSystem(api)).Initialize()
+
+	base.prefabs = NewPrefabFactory()
 
 	// Set base scene with a camera
 	camera := base.CreateObject(0, 0)
@@ -97,6 +99,10 @@ func (this *Base) DeltaSleep() {
 // Create a new object (note: this doesn't add it to the scene)
 func (this *Base) CreateObject(x, y int32) *Object {
 	object := NewObject()
+	return this.InitializeObject(object, x, y)
+}
+
+func (this *Base) InitializeObject(object *Object, x, y int32) *Object {
 	object.AddComponent(NewTransformComponent(x, y))
 	return object
 }
@@ -181,6 +187,14 @@ func (this *Base) Graphics() *Graphics {
 
 func (this *Base) SetQuit(quit bool) {
 	this.quit = quit
+}
+
+func (this *Base) SetPrefabFactory(factory *PrefabFactory) {
+	this.prefabs = factory
+}
+
+func (this *Base) Prefabs() *PrefabFactory {
+	return this.prefabs
 }
 
 func (this *Base) Input() *Input {

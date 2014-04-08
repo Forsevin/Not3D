@@ -6,36 +6,36 @@ import (
 	"reflect"
 )
 
-// System interface, all systems to be processed need to implement these methods
-// $ Initialize - Called before used
-// $ ProcessObject - Each object of interest will be processed by this method
-// $ Check - Check a object if it possesses the data in interest
-// $ SetDataInterest - Register a data type of interest for this system
-// $ Process - Calls ProcessObject for each object
-// $ RemoveObject - Just remove all objects from this system
-// $ SetBase - Set the base for this system (not really used, may be removed of no use are found)
 type ISystem interface {
+	// Called before use
 	Initialize()
+	// Every object of interest get passed to this function
 	ProcessObject(object *Object)
+	// Check if object has bits of interest
 	Check(object *Object)
-	SetComponentInterest(component IComponent)
+	// Set a component as of interest
+	AddComponent(component IComponent)
+	// Calls ProcessObject for each object
 	Process()
+	// Simply removes all objects from activeObjects
 	RemoveObjects()
+	// Sets base
 	SetBase(base *Base)
+	// Called before processing
 	Begin()
+	// Called after processing
 	End()
 }
 
-// The base system (need to be "inherited")
-// $ activeObjects - Objects of interest found by the check method
-// $ aspect - A bitset of indexes for data checked against object bits
-// $ ProcessFunc - Because Golang got no overloading the method need to be specificed manually (proboably in the initialized method)
-// $ base - If something need to be gotten from the base (currently not in use, see last comment of ISystem)
 type System struct {
+	// Objects put there by Check that will be processed
 	activeObjects []*Object
-	aspect        bitset.BitSet
-	ProcessFunc   func(object *Object)
-	base          *Base
+	// Bits for components of interest
+	aspect bitset.BitSet
+	// Because go doesn't have overloading we'll have to set our process method manually
+	ProcessFunc func(object *Object)
+	// If something has to be retrieved from base
+	base *Base
 }
 
 func (this *System) Process() {

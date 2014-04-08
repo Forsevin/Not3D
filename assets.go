@@ -5,9 +5,13 @@ import (
 	"io/ioutil"
 )
 
+var (
+	scriptDir string = "assets/scripts/"
+	imageDir  string = "assets/images/"
+)
+
 // Handle loading and storing of assets
-// Until I'll figure out wether sdl_image actually works and how it works
-// we'll have to use BMPs' :(
+// Until I'll figure out wether sdl_image actually works and how it works we'll have to use BMPs' :(
 
 type Assets struct {
 	// For hardware accelerated textures
@@ -26,9 +30,9 @@ func NewAssets(graphics *Graphics) *Assets {
 }
 
 func (this *Assets) LoadImageAsset(file string) {
-	img := sdl.LoadBMP(file)
+	img := sdl.LoadBMP(imageDir + file)
 	if img == nil {
-		// Maybe we'll load some nifty image here instead
+		gLogger.Fatalln("Couldn't load image asset:", sdl.GetError())
 		return
 	}
 	this.imageAssets[file] = this.graphics.renderer.CreateTextureFromSurface(img)
@@ -39,9 +43,9 @@ func (this *Assets) ImageAsset(name string) *sdl.Texture {
 }
 
 func (this *Assets) LoadScriptAsset(file string) {
-	raw, err := ioutil.ReadFile(file)
+	raw, err := ioutil.ReadFile(scriptDir + file)
 	if err != nil {
-		gLogger.Fatalf("Couldn't load script asset:", err)
+		gLogger.Fatalln("Couldn't load script asset:", err)
 	}
 	this.scriptAssets[file] = string(raw)
 }
