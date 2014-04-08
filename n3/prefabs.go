@@ -10,11 +10,11 @@ func NewPrefabFactory() *PrefabFactory {
 	}
 }
 
-func (this *PrefabFactory) Prefab(prefab string) *Object {
-	return this.prefabs[prefab]
+func (prefabs *PrefabFactory) Prefab(prefab string) *Object {
+	return prefabs.prefabs[prefab]
 }
 
-func (this *PrefabFactory) NewPrefab(name string, object *Object) *Object {
-	this.prefabs[name] = object
+func (prefabs *PrefabFactory) NewPrefab(name string, object *Object) *Object {
+	prefabs.prefabs[name] = object
 	return object
 }

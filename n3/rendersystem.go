@@ -2,7 +2,7 @@ package n3
 
 type RenderSystem struct {
 	System
-	//Maybe this should be moved somewhere else?
+	//Maybe rendersystem should be moved somewhere else?
 	spriteBatch *SpriteBatch
 }
 
@@ -12,22 +12,22 @@ func NewRenderSystem(graphics *Graphics) *RenderSystem {
 	}
 }
 
-func (this *RenderSystem) Begin() {
-	this.spriteBatch.Begin()
+func (rendersystem *RenderSystem) Begin() {
+	rendersystem.spriteBatch.Begin()
 }
 
-func (this *RenderSystem) End() {
-	this.spriteBatch.End()
+func (rendersystem *RenderSystem) End() {
+	rendersystem.spriteBatch.End()
 }
 
-func (this *RenderSystem) Initialize() {
-	this.ProcessFunc = this.ProcessObject
-	this.SetComponentInterest(new(SpriteComponent))
-	this.SetComponentInterest(new(TransformComponent))
+func (rendersystem *RenderSystem) Initialize() {
+	rendersystem.ProcessFunc = rendersystem.ProcessObject
+	rendersystem.AddComponent(new(SpriteComponent))
+	rendersystem.AddComponent(new(TransformComponent))
 }
 
-func (this *RenderSystem) ProcessObject(object *Object) {
+func (rendersystem *RenderSystem) ProcessObject(object *Object) {
 	sprite := object.Component(new(SpriteComponent)).(*SpriteComponent)
 	transform := object.Component(new(TransformComponent)).(*TransformComponent)
-	this.spriteBatch.Draw(&sprite.Texture, transform.X, transform.Y, 63, 87)
+	rendersystem.spriteBatch.Draw(&sprite.Texture, transform.X, transform.Y, 63, 87)
 }

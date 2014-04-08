@@ -15,10 +15,10 @@ func NewApi(base *Base) *Api {
 }
 
 // Inititalize a runtime, setting classes avaible in scripting etc
-func (this *Api) InitializeRuntime(runtime *otto.Otto, object *Object) {
-	runtime.Set("engine", NewEngineInterface(this.base))
+func (api *Api) InitializeRuntime(runtime *otto.Otto, object *Object) {
+	runtime.Set("engine", NewEngineInterface(api.base))
 	runtime.Set("object", NewObjectInterface(object))
-	runtime.Set("input", NewInputInterface(this.base.Input()))
+	runtime.Set("input", NewInputInterface(api.base.Input()))
 }
 
 //// ENGINE INTERFACE
@@ -34,8 +34,8 @@ func NewEngineInterface(base *Base) *EngineInterface {
 }
 
 // Set base.quit to true
-func (this *EngineInterface) Quit(call otto.FunctionCall) otto.Value {
-	this.base.SetQuit(true)
+func (api *EngineInterface) Quit(call otto.FunctionCall) otto.Value {
+	api.base.SetQuit(true)
 
 	return otto.NullValue()
 }
@@ -44,7 +44,7 @@ func (this *EngineInterface) Quit(call otto.FunctionCall) otto.Value {
 // @arg1 name of prefab
 // @arg2 x cordinates
 // @arg3 y cordinates
-func (this *EngineInterface) SpawnPrefab(call otto.FunctionCall) otto.Value {
+func (api *EngineInterface) SpawnPrefab(call otto.FunctionCall) otto.Value {
 	prefabName, err := call.Argument(0).ToString()
 	if err != nil {
 		gLogger.Fatalln(err)
@@ -60,11 +60,11 @@ func (this *EngineInterface) SpawnPrefab(call otto.FunctionCall) otto.Value {
 		gLogger.Fatalln(err)
 	}
 
-	prefab := this.base.Prefabs().Prefab(prefabName)
+	prefab := api.base.Prefabs().Prefab(prefabName)
 	if prefab == nil {
 		gLogger.Fatalln("Prefab", prefabName, "doesn't exit")
 	}
-	// This is a bit dirty don't you think?
+	// api is a bit dirty don't you think?
 	cords := prefab.Component(new(TransformComponent)).(*TransformComponent)
 	cords.X = int32(x)
 	cords.Y = int32(y)
@@ -73,21 +73,21 @@ func (this *EngineInterface) SpawnPrefab(call otto.FunctionCall) otto.Value {
 }
 
 // Print something
-func (this *EngineInterface) Print(call otto.FunctionCall) otto.Value {
+func (api *EngineInterface) Print(call otto.FunctionCall) otto.Value {
 	msg, _ := call.Argument(0).ToString()
 	gLogger.Println(msg)
 	return otto.NullValue()
 }
 
 // Sets the active scene
-func (this *EngineInterface) SetActiveScene(call otto.FunctionCall) otto.Value {
+func (api *EngineInterface) SetActiveScene(call otto.FunctionCall) otto.Value {
 	scene, err := call.Argument(0).ToString()
 	if err != nil {
 		gLogger.Fatalln(err)
 	}
 
 	// TODO check if scene exists first
-	this.base.SetActiveScene(scene)
+	api.base.SetActiveScene(scene)
 
 	return otto.NullValue()
 }
@@ -104,12 +104,12 @@ func NewInputInterface(input *Input) *InputInterface {
 	}
 }
 
-func (this *InputInterface) KeyDown(call otto.FunctionCall) otto.Value {
+func (inputInterface *InputInterface) KeyDown(call otto.FunctionCall) otto.Value {
 	key, err := call.Argument(0).ToString()
 	if err != nil {
 		gLogger.Fatalln(err)
 	}
-	r, err := otto.ToValue(this.input.KeyDown(key))
+	r, err := otto.ToValue(inputInterface.input.KeyDown(key))
 	if err != nil {
 		gLogger.Fatalln(err)
 	}
@@ -132,20 +132,20 @@ func NewObjectInterface(object *Object) *ObjectInterface {
 	}
 }
 
-func (this *ObjectInterface) SetX(call otto.FunctionCall) otto.Value {
+func (objectInterface *ObjectInterface) SetX(call otto.FunctionCall) otto.Value {
 	x, err := call.Argument(0).ToInteger()
 	if err != nil {
 		gLogger.Fatalln(err)
 	}
-	transform := this.object.Component(new(TransformComponent)).(*TransformComponent)
+	transform := objectInterface.object.Component(new(TransformComponent)).(*TransformComponent)
 	transform.X = int32(x)
 
 	return otto.NullValue()
 }
 
-func (this *ObjectInterface) GetX(call otto.FunctionCall) otto.Value {
-	transform := this.object.Component(new(TransformComponent)).(*TransformComponent)
-	// This object doesn't have a transform component
+func (objectInterface *ObjectInterface) GetX(call otto.FunctionCall) otto.Value {
+	transform := objectInterface.object.Component(new(TransformComponent)).(*TransformComponent)
+	// api object doesn't have a transform component
 	if transform == nil {
 		return otto.NullValue()
 	}
@@ -154,20 +154,20 @@ func (this *ObjectInterface) GetX(call otto.FunctionCall) otto.Value {
 	return r
 }
 
-func (this *ObjectInterface) SetY(call otto.FunctionCall) otto.Value {
+func (objectInterface *ObjectInterface) SetY(call otto.FunctionCall) otto.Value {
 	y, err := call.Argument(0).ToInteger()
 	if err != nil {
 		gLogger.Fatalln(err)
 	}
-	transform := this.object.Component(new(TransformComponent)).(*TransformComponent)
+	transform := objectInterface.object.Component(new(TransformComponent)).(*TransformComponent)
 	transform.Y = int32(y)
 
 	return otto.NullValue()
 }
 
-func (this *ObjectInterface) GetY(call otto.FunctionCall) otto.Value {
-	transform := this.object.Component(new(TransformComponent)).(*TransformComponent)
-	// This object doesn't have a transform component
+func (objectInterface *ObjectInterface) GetY(call otto.FunctionCall) otto.Value {
+	transform := objectInterface.object.Component(new(TransformComponent)).(*TransformComponent)
+
 	if transform == nil {
 		return otto.NullValue()
 	}

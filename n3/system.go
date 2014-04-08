@@ -9,7 +9,7 @@ import (
 type ISystem interface {
 	// Called before use
 	Initialize()
-	// Every object of interest get passed to this function
+	// Every object of interest get passed to system function
 	ProcessObject(object *Object)
 	// Check if object has bits of interest
 	Check(object *Object)
@@ -38,43 +38,43 @@ type System struct {
 	base *Base
 }
 
-func (this *System) Process() {
-	if this.ProcessFunc == nil {
-		fmt.Println("For type:", reflect.TypeOf(this))
+func (system *System) Process() {
+	if system.ProcessFunc == nil {
+		fmt.Println("For type:", reflect.TypeOf(system))
 		panic("ProcessFunc not set, you may not have inititalized a system or not set the function at all")
 	}
 
-	for _, object := range this.activeObjects {
-		this.ProcessFunc(object)
+	for _, object := range system.activeObjects {
+		system.ProcessFunc(object)
 	}
 }
 
-func (this *System) SetComponentInterest(component IComponent) {
-	this.aspect.Set(gDataManager.Get(component))
+func (system *System) AddComponent(component IComponent) {
+	system.aspect.Set(gDataManager.Get(component))
 }
 
-func (this *System) SetBase(base *Base) {
+func (system *System) SetBase(base *Base) {
 
 }
 
-// Check if this object is of interest, if it is it will be added to active
+// Check if system object is of interest, if it is it will be added to active
 // array of objects to be processed
-func (this *System) Check(object *Object) {
+func (system *System) Check(object *Object) {
 	objectBits := object.Bits()
 	var interested bool = true
 
-	for i, v := this.aspect.NextSet(0); v != false; i, v = this.aspect.NextSet(i) {
+	for i, v := system.aspect.NextSet(0); v != false; i, v = system.aspect.NextSet(i) {
 		if !objectBits.Test(i) {
 			interested = false
 		}
 		i += 1
 	}
 	if interested {
-		this.activeObjects = append(this.activeObjects, object)
+		system.activeObjects = append(system.activeObjects, object)
 	}
 }
 
 // Remove all objects
-func (this *System) RemoveObjects() {
-	this.activeObjects = nil
+func (system *System) RemoveObjects() {
+	system.activeObjects = nil
 }

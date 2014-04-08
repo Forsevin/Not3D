@@ -5,20 +5,13 @@ import (
 	"io/ioutil"
 )
 
-var (
-	scriptDir string = "assets/scripts/"
-	imageDir  string = "assets/images/"
-)
-
-// Handle loading and storing of assets
-// Until I'll figure out wether sdl_image actually works and how it works we'll have to use BMPs' :(
-
 type Assets struct {
-	// For hardware accelerated textures
 	graphics     *Graphics
 	imageAssets  map[string]*sdl.Texture
 	soundAssets  map[string]int
 	scriptAssets map[string]string
+	scriptDir    string
+	imageDir     string
 }
 
 func NewAssets(graphics *Graphics) *Assets {
@@ -26,30 +19,32 @@ func NewAssets(graphics *Graphics) *Assets {
 		imageAssets:  make(map[string]*sdl.Texture),
 		scriptAssets: make(map[string]string),
 		graphics:     graphics,
+		imageDir:     "assets/images/",
+		scriptDir:    "assets/scripts/",
 	}
 }
 
-func (this *Assets) LoadImageAsset(file string) {
-	img := sdl.LoadBMP(imageDir + file)
+func (assets *Assets) LoadImageAsset(file string) {
+	img := sdl.LoadBMP(assets.imageDir + file)
 	if img == nil {
 		gLogger.Fatalln("Couldn't load image asset:", sdl.GetError())
 		return
 	}
-	this.imageAssets[file] = this.graphics.renderer.CreateTextureFromSurface(img)
+	assets.imageAssets[file] = assets.graphics.renderer.CreateTextureFromSurface(img)
 }
 
-func (this *Assets) ImageAsset(name string) *sdl.Texture {
-	return this.imageAssets[name]
+func (assets *Assets) ImageAsset(name string) *sdl.Texture {
+	return assets.imageAssets[name]
 }
 
-func (this *Assets) LoadScriptAsset(file string) {
-	raw, err := ioutil.ReadFile(scriptDir + file)
+func (assets *Assets) LoadScriptAsset(file string) {
+	raw, err := ioutil.ReadFile(assets.scriptDir + file)
 	if err != nil {
 		gLogger.Fatalln("Couldn't load script asset:", err)
 	}
-	this.scriptAssets[file] = string(raw)
+	assets.scriptAssets[file] = string(raw)
 }
 
-func (this *Assets) ScriptAsset(script string) string {
-	return this.scriptAssets[script]
+func (assets *Assets) ScriptAsset(script string) string {
+	return assets.scriptAssets[script]
 }

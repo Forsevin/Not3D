@@ -32,15 +32,15 @@ type Component struct {
 	index uint
 }
 
-func (this *Component) Index() uint {
+func (component *Component) Index() uint {
 	// if index is zero when can presume it haven't been set and get a new one
-	if this.index < 1 {
-		this.index = gDataManager.Get(this)
+	if component.index < 1 {
+		component.index = gDataManager.Get(component)
 	}
 
-	return this.index
+	return component.index
 }
 
-func (this *Component) SetIndex(index uint) {
-	this.index = index
+func (component *Component) SetIndex(index uint) {
+	component.index = index
 }

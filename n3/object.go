@@ -18,29 +18,29 @@ func NewObject() *Object {
 	}
 }
 
-func (this *Object) Name() string {
-	return this.name
+func (object *Object) Name() string {
+	return object.name
 }
 
-func (this *Object) SetName(name string) {
-	this.name = name
+func (object *Object) SetName(name string) {
+	object.name = name
 }
 
-// Add data container to this object with its index to use
+// Add data container to object object with its index to use
 // later for system processing
-func (this *Object) AddComponent(component IComponent) IComponent {
-	this.data[gDataManager.Get(component)] = component
-	this.bits.Set(gDataManager.Get(component))
+func (object *Object) AddComponent(component IComponent) IComponent {
+	object.data[gDataManager.Get(component)] = component
+	object.bits.Set(gDataManager.Get(component))
 	return component
 }
 
-func (this *Object) Bits() *bitset.BitSet {
-	return &this.bits
+func (object *Object) Bits() *bitset.BitSet {
+	return &object.bits
 }
 
 // Return data by its type name (the most inefficent)
-func (this *Object) ComponentByName(name string) IComponent {
-	for _, data := range this.data {
+func (object *Object) ComponentByName(name string) IComponent {
+	for _, data := range object.data {
 		if reflect.TypeOf(data).String() == name {
 			return data
 		}
@@ -49,9 +49,9 @@ func (this *Object) ComponentByName(name string) IComponent {
 }
 
 // Return data by its type (more efficent)
-func (this *Object) ComponentByType(data IComponent) IComponent {
+func (object *Object) ComponentByType(data IComponent) IComponent {
 	datatype := reflect.TypeOf(data)
-	for _, data := range this.data {
+	for _, data := range object.data {
 		if datatype == reflect.TypeOf(data) {
 			return data
 		}
@@ -61,11 +61,11 @@ func (this *Object) ComponentByType(data IComponent) IComponent {
 }
 
 // Return data by its data index (the most efficent)
-func (this *Object) ComponentByIndex(index uint) IComponent {
-	return this.data[index]
+func (object *Object) ComponentByIndex(index uint) IComponent {
+	return object.data[index]
 }
 
 // Simple return
-func (this *Object) Component(component IComponent) IComponent {
-	return this.data[gDataManager.Get(component)]
+func (object *Object) Component(component IComponent) IComponent {
+	return object.data[gDataManager.Get(component)]
 }

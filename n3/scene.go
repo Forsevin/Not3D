@@ -13,14 +13,14 @@ func NewScene() *Scene {
 	return &Scene{}
 }
 
-// Add an object to this scene
-func (this *Scene) AddObject(object *Object) {
-	this.objects = append(this.objects, object)
+// Add an object to scene scene
+func (scene *Scene) AddObject(object *Object) {
+	scene.objects = append(scene.objects, object)
 }
 
 // Get a object by its name, pretty costly so use it wisely
-func (this *Scene) ObjectByName(name string) *Object {
-	for _, obj := range this.objects {
+func (scene *Scene) ObjectByName(name string) *Object {
+	for _, obj := range scene.objects {
 		if obj.Name() == name {
 			return obj
 		}
@@ -28,13 +28,13 @@ func (this *Scene) ObjectByName(name string) *Object {
 	return nil
 }
 
-// Return all objects in this scene
-func (this *Scene) Objects() []*Object {
-	return this.objects
+// Return all objects in scene scene
+func (scene *Scene) Objects() []*Object {
+	return scene.objects
 }
 
-func (this *Scene) Debug() {
-	for k, v := range this.objects {
+func (scene *Scene) Debug() {
+	for k, v := range scene.objects {
 		fmt.Println(k, v)
 	}
 }
