@@ -2,7 +2,7 @@ package n3
 
 import "github.com/robertkrimen/otto"
 
-// Data for X, Y cordinates, width and height and angle for rotation
+// TransformComponent contains data for X, Y cordinates, width and height and angle for rotation
 type TransformComponent struct {
 	Component
 	X, Y  int32
@@ -10,6 +10,7 @@ type TransformComponent struct {
 	Angle int32
 }
 
+// NewTransformComponent returns a new TransformComponent with its X,Y set
 func NewTransformComponent(x, y int32) *TransformComponent {
 	return &TransformComponent{
 		X:     x,
@@ -18,30 +19,33 @@ func NewTransformComponent(x, y int32) *TransformComponent {
 	}
 }
 
-// The camera used by rendersystem
+// CameraComponent is the camera used by RenderSystem
 type CameraComponent struct {
 	Component
 }
 
+// NewCameraComponent returns a new CameraComponent
 func NewCameraComponent() *CameraComponent {
 	return &CameraComponent{}
 }
 
-// Data for textures used for rendering
+// SpriteComponent contains data for textures used for rendering
 type SpriteComponent struct {
 	Component
 	Texture Texture2D
 }
 
+// NewSpriteComponent returns a new SpriteComponent
 func NewSpriteComponent() *SpriteComponent {
 	return &SpriteComponent{}
 }
 
+// SpriteSetComponent is a set of string to textures
 type SpriteSetComponent struct {
 	Set map[string]Texture2D
 }
 
-// Data for the Gel script system
+// ScriptComponent contains data for the Gel script system
 type ScriptComponent struct {
 	Component
 	// Script loaded either manually or by base.Assets
@@ -51,6 +55,7 @@ type ScriptComponent struct {
 	object  *otto.Object
 }
 
+// NewScriptComponent returns a new ScriptComponent
 func NewScriptComponent() *ScriptComponent {
 	return &ScriptComponent{}
 }

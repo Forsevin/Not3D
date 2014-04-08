@@ -2,10 +2,12 @@ package n3
 
 import (
 	"fmt"
-	"github.com/willf/bitset"
 	"reflect"
+
+	"github.com/willf/bitset"
 )
 
+// ISystem is an abstract System
 type ISystem interface {
 	// Called before use
 	Initialize()
@@ -27,6 +29,7 @@ type ISystem interface {
 	End()
 }
 
+// System implements the ISystem
 type System struct {
 	// Objects put there by Check that will be processed
 	activeObjects []*Object
@@ -38,43 +41,45 @@ type System struct {
 	base *Base
 }
 
-func (system *System) Process() {
-	if system.ProcessFunc == nil {
-		fmt.Println("For type:", reflect.TypeOf(system))
+// Process calls the process function on each object owned by the system
+func (s *System) Process() {
+	if s.ProcessFunc == nil {
+		fmt.Println("For type:", reflect.TypeOf(s))
 		panic("ProcessFunc not set, you may not have inititalized a system or not set the function at all")
 	}
 
-	for _, object := range system.activeObjects {
-		system.ProcessFunc(object)
+	for _, object := range s.activeObjects {
+		s.ProcessFunc(object)
 	}
 }
 
-func (system *System) AddComponent(component IComponent) {
-	system.aspect.Set(gDataManager.Get(component))
+// AddComponent adds the compoenet to the system's aspect
+func (s *System) AddComponent(component IComponent) {
+	s.aspect.Set(gDataManager.Get(component))
 }
 
-func (system *System) SetBase(base *Base) {
-
+// SetBase sets the system's base
+func (s *System) SetBase(base *Base) {
+	//  TODO: implement
 }
 
-// Check if system object is of interest, if it is it will be added to active
-// array of objects to be processed
-func (system *System) Check(object *Object) {
+// Check if system object is of interest, if it is it will be added to active array of objects to be processed
+func (s *System) Check(object *Object) {
 	objectBits := object.Bits()
-	var interested bool = true
+	interested := true
 
-	for i, v := system.aspect.NextSet(0); v != false; i, v = system.aspect.NextSet(i) {
+	for i, v := s.aspect.NextSet(0); v != false; i, v = s.aspect.NextSet(i) {
 		if !objectBits.Test(i) {
 			interested = false
 		}
-		i += 1
+		i++
 	}
 	if interested {
-		system.activeObjects = append(system.activeObjects, object)
+		s.activeObjects = append(s.activeObjects, object)
 	}
 }
 
-// Remove all objects
-func (system *System) RemoveObjects() {
-	system.activeObjects = nil
+// RemoveObjects removes all of the objects in the system
+func (s *System) RemoveObjects() {
+	s.activeObjects = nil
 }
