@@ -2,33 +2,37 @@ package n3
 
 import "github.com/jackyb/go-sdl2/sdl"
 
+// Texture2D is a wrapper around an sdl.Texture
 type Texture2D struct {
 	Texture *sdl.Texture
 }
 
+// SpriteBatch is a system for batched requests dealing with sprites
 type SpriteBatch struct {
-	graphics *Graphics
+	graphics_ *graphics
 }
 
-func NewSpriteBatch(graphics *Graphics) *SpriteBatch {
+// NewSpriteBatch returns a new SpriteBatch with the graphics set.
+func NewSpriteBatch(graphics_ *graphics) *SpriteBatch {
 	return &SpriteBatch{
-		graphics: graphics,
+		graphics_: graphics_,
 	}
 }
 
-// Get ready for a new draw (clear screen etc)
-func (spritebatch *SpriteBatch) Begin() {
-	spritebatch.graphics.renderer.Clear()
+// Begin gets ready for a new draw (clear screen etc)
+func (s *SpriteBatch) Begin() {
+	s.graphics_.renderer.Clear()
 }
 
-func (spritebatch *SpriteBatch) Draw(texture *Texture2D, x, y, w, h int32) {
+// Draw the provided texture at the coordinates
+func (s *SpriteBatch) Draw(texture *Texture2D, x, y, w, h int32) {
 	src := sdl.Rect{0, 0, 512, 512}
 	dst := sdl.Rect{x, y, w, h}
 
-	spritebatch.graphics.renderer.Copy(texture.Texture, &src, &dst)
+	s.graphics_.renderer.Copy(texture.Texture, &src, &dst)
 }
 
-// Draw our shit
-func (spritebatch *SpriteBatch) End() {
-	spritebatch.graphics.renderer.Present()
+// End finishes the batching and does the actual drawing.
+func (s *SpriteBatch) End() {
+	s.graphics_.renderer.Present()
 }

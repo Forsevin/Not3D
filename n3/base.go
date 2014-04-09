@@ -1,31 +1,35 @@
 package n3
 
 import (
-	"github.com/jackyb/go-sdl2/sdl"
 	"log"
 	"os"
+
+	"github.com/jackyb/go-sdl2/sdl"
 	//"time"
 )
 
 // Some global variables put here for convinience
 var (
-	gLogger      *log.Logger = log.New(os.Stdout, "[oden] ", 0)
-	gDataManager *DataManager
+	gLogger = log.New(os.Stdout, "[oden] ", 0)
+	gBits   = NewBitManager()
 )
 
-type Graphics struct {
+// Graphics is a SDL context, a window and a renderer
+type graphics struct {
 	window   *sdl.Window
 	renderer *sdl.Renderer
 }
 
-func NewGraphics() *Graphics {
-	window := sdl.CreateWindow("Oden", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, 640, 480, sdl.WINDOW_SHOWN)
-	return &Graphics{
+// NewGraphics returns a new Graphics context, with some defaults set.
+func newGraphics() *graphics {
+	window := sdl.CreateWindow("n3", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, 640, 480, sdl.WINDOW_SHOWN)
+	return &graphics{
 		window:   window,
 		renderer: sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED),
 	}
 }
 
+// Base is a collection of systems, acting as the root system
 type Base struct {
 	// The scene currently in use, objects will be added to base
 	activeScene *Scene
@@ -36,7 +40,7 @@ type Base struct {
 	// Asset mananger
 	assets *Assets
 	// Handles windows and other SDL related variables
-	graphics *Graphics
+	graphics_ *graphics
 	// Handles input
 	input *Input
 	// Manange objects to be set and retrieved later
@@ -45,155 +49,172 @@ type Base struct {
 	quit bool
 }
 
+// New returns a new Base with its components already built
 func New() *Base {
-	var base Base
+	base := &Base{}
 
-	base.SetGraphics(NewGraphics())
-
-	gDataManager = NewDataManager()
+	base.graphics_ = newGraphics()
 	base.scenes = make(map[string]*Scene)
-	base.assets = NewAssets(base.Graphics())
+	base.assets = NewAssets(base.graphics())
+
 	base.SetInput(NewInput())
-	base.AddGlobalSystem(NewRenderSystem(base.Graphics())).Initialize()
-	api := NewApi(&base)
-	base.AddGlobalSystem(NewScriptSystem(api)).Initialize()
+
+	base.AddGlobalSystem(NewRenderSystem(base.graphics())).Initialize()
+	base.AddGlobalSystem(NewScriptSystem(NewAPI(base))).Initialize()
+
 	base.prefabs = NewPrefabFactory()
 
-	camera := base.CreateObject(0, 0)
-	camera.AddComponent(NewCameraComponent())
-
 	scene := NewScene()
-	scene.AddObject(camera)
 	base.AddScene("main", scene)
 	base.SetActiveScene("main")
 
-	return &base
-
+	return base
 }
 
-func (base *Base) Process() {
+// Process goes through each system and calls the batching/processing functions.
+func (b *Base) Process() {
 	// TODO only call UpdateSystemObjectPossession when needed
-	base.UpdateSystemObjectPossesions()
+	b.UpdateSystemObjectPossesions()
 
-	for _, system := range base.globalSystems {
+	for _, system := range b.globalSystems {
 		system.Begin()
 		system.Process()
 		system.End()
 	}
 }
 
-func (base *Base) DeltaSleep() {
+// DeltaSleep tells SDL to wait
+func (b *Base) DeltaSleep() {
 	sdl.Delay(16)
 }
 
-func (base *Base) CreateObject(x, y int32) *Object {
+// CreateObject creates and initializes a new Object at the given coords.
+func (b *Base) CreateObject() *Object {
 	object := NewObject()
-	return base.InitializeObject(object, x, y)
+	return b.InitializeObject(object, 0, 0)
 }
 
-func (base *Base) InitializeObject(object *Object, x, y int32) *Object {
+// InitializeObject puts the object at the given coords.
+func (b *Base) InitializeObject(object *Object, x, y int32) *Object {
 	object.AddComponent(NewTransformComponent(x, y))
 	return object
 }
 
-func (base *Base) SetWindowTitle(title string) {
-	base.graphics.window.SetTitle(title)
+// SetWindowTitle sets the title of the window
+func (b *Base) SetWindowTitle(title string) {
+	b.graphics_.window.SetTitle(title)
 }
 
-func (base *Base) SetActiveScene(identifier string) {
-	base.activeScene = base.scenes[identifier]
+// SetActiveScene makes the active scene the one represented by the identifier
+func (b *Base) SetActiveScene(identifier string) {
+	b.activeScene = b.scenes[identifier]
 }
 
-func (base *Base) AddScene(identifier string, scene *Scene) {
-	base.scenes[identifier] = scene
+// AddScene maps a scene to an indentifier
+func (b *Base) AddScene(identifier string, scene *Scene) {
+	b.scenes[identifier] = scene
 }
 
-func (base *Base) Scene(identifier string) *Scene {
-	return base.scenes[identifier]
+// Scene takes an identifier and returns the associated scene
+func (b *Base) Scene(identifier string) *Scene {
+	return b.scenes[identifier]
 }
 
-func (base *Base) ActiveScene() *Scene {
-	return base.activeScene
+// ActiveScene returns the current active scene
+func (b *Base) ActiveScene() *Scene {
+	return b.activeScene
 }
 
-func (base *Base) DeleteScene(identifier string) {
-	delete(base.scenes, identifier)
+// DeleteScene takes an id string and deletes the associated string
+func (b *Base) DeleteScene(identifier string) {
+	delete(b.scenes, identifier)
 }
 
-func (base *Base) SetAssets(assets *Assets) {
-	base.assets = assets
+// SetAssets takes some assets and uses them in the base
+func (b *Base) SetAssets(assets *Assets) {
+	b.assets = assets
 }
 
-func (base *Base) Assets() *Assets {
-	return base.assets
+// Assets returns the currently held assets
+func (b *Base) Assets() *Assets {
+	return b.assets
 }
 
-func (base *Base) AddGlobalSystem(system ISystem) ISystem {
-	base.globalSystems = append(base.globalSystems, system)
+// AddGlobalSystem adds a system to the base component
+func (b *Base) AddGlobalSystem(system ISystem) ISystem {
+	b.globalSystems = append(b.globalSystems, system)
 	return system
 }
 
-func (base *Base) Loop() {
-	for base.quit == false {
-		if base.input.Process() == true {
-			base.SetQuit(true)
+// Loop is the main loop for the Base System, it continues until SetQuit is called with 'true'
+func (b *Base) Loop() {
+	for b.quit == false {
+		if b.input.Process() == true {
+			b.SetQuit(true)
 		}
 
-		base.Process()
+		b.Process()
 
 		sdl.Delay(16)
 	}
 }
 
-func (base *Base) UpdateSystemObjectPossesions() {
-	for _, system := range base.globalSystems {
+// UpdateSystemObjectPossesions removes all of the systems objects
+// Then it'll check to see if they want any of the active scene's objects
+func (b *Base) UpdateSystemObjectPossesions() {
+	for _, system := range b.globalSystems {
 		system.RemoveObjects()
-		for _, object := range base.activeScene.Objects() {
+		for _, object := range b.activeScene.Objects() {
 			system.Check(object)
 		}
 	}
 }
 
-func (base *Base) Log(msg string) {
+// Log delegates to the logger
+func (b *Base) Log(msg string) {
 	gLogger.Print(msg)
 }
 
-func (base *Base) SetGraphics(graphics *Graphics) {
-	base.graphics = graphics
+// Graphics returns the graphics context
+func (b *Base) graphics() *graphics {
+	return b.graphics_
 }
 
-func (base *Base) Graphics() *Graphics {
-	return base.graphics
+// Quit returns whether the base has quit its main loop.
+func (b *Base) Quit() bool {
+	return b.quit
 }
 
-func (base *Base) SetQuit(quit bool) {
-	base.quit = quit
+// SetQuit sets the flag for the base to quit
+func (b *Base) SetQuit(quit bool) {
+	b.quit = quit
 }
 
-func (base *Base) SetPrefabFactory(factory *PrefabFactory) {
-	base.prefabs = factory
+// SetPrefabFactory sets the base's PrefabFactory
+func (b *Base) SetPrefabFactory(factory *PrefabFactory) {
+	b.prefabs = factory
 }
 
-func (base *Base) Prefabs() *PrefabFactory {
-	return base.prefabs
+// Prefabs returns the base's PrefabFactory
+func (b *Base) Prefabs() *PrefabFactory {
+	return b.prefabs
 }
 
-func (base *Base) Input() *Input {
-	return base.input
+// Input returns the base's input
+func (b *Base) Input() *Input {
+	return b.input
 }
 
-func (base *Base) SetInput(input *Input) {
-	base.input = input
+// SetInput sets the base's input
+func (b *Base) SetInput(input *Input) {
+	b.input = input
 }
 
-func (base *Base) Quit() bool {
-	return base.quit
+// SDLLog ...
+func (b *Base) SDLLog(msg string) {
+	// TODO: implement
 }
 
-func (base *Base) SDLLog(msg string) {
-
-}
-
-func (base *Base) Error() string {
+func (b *Base) Error() string {
 	return sdl.GetError().Error()
 }

@@ -1,20 +1,24 @@
 package n3
 
+// PrefabFactory is a factory that can cache prefab objects
 type PrefabFactory struct {
 	prefabs map[string]*Object
 }
 
+// NewPrefabFactory returns a new PrefabFactory
 func NewPrefabFactory() *PrefabFactory {
 	return &PrefabFactory{
 		prefabs: make(map[string]*Object),
 	}
 }
 
-func (prefabs *PrefabFactory) Prefab(prefab string) *Object {
-	return prefabs.prefabs[prefab]
+// Prefab returns the prefab for the provided string
+func (p *PrefabFactory) Prefab(prefab string) *Object {
+	return p.prefabs[prefab]
 }
 
-func (prefabs *PrefabFactory) NewPrefab(name string, object *Object) *Object {
-	prefabs.prefabs[name] = object
+// NewPrefab binds a name to an object, returning it
+func (p *PrefabFactory) NewPrefab(name string, object *Object) *Object {
+	p.prefabs[name] = object
 	return object
 }

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/j6n/Not3D/n3"
+import "github.com/Forsevin/Not3D/n3"
 
 func main() {
 	engine := n3.New()

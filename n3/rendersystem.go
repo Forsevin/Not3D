@@ -1,33 +1,39 @@
 package n3
 
+// RenderSystem is a system that renders to the screen
 type RenderSystem struct {
 	System
 	//Maybe rendersystem should be moved somewhere else?
 	spriteBatch *SpriteBatch
 }
 
-func NewRenderSystem(graphics *Graphics) *RenderSystem {
+// NewRenderSystem returns a new RenderSystem with the graphics system set.
+func NewRenderSystem(graphics_ *graphics) *RenderSystem {
 	return &RenderSystem{
-		spriteBatch: NewSpriteBatch(graphics),
+		spriteBatch: NewSpriteBatch(graphics_),
 	}
 }
 
-func (rendersystem *RenderSystem) Begin() {
-	rendersystem.spriteBatch.Begin()
+// Begin the batch process
+func (r *RenderSystem) Begin() {
+	r.spriteBatch.Begin()
 }
 
-func (rendersystem *RenderSystem) End() {
-	rendersystem.spriteBatch.End()
+// End the batch process
+func (r *RenderSystem) End() {
+	r.spriteBatch.End()
 }
 
-func (rendersystem *RenderSystem) Initialize() {
-	rendersystem.ProcessFunc = rendersystem.ProcessObject
-	rendersystem.AddComponent(new(SpriteComponent))
-	rendersystem.AddComponent(new(TransformComponent))
+// Initialize the rendersystem with some defaults
+func (r *RenderSystem) Initialize() {
+	r.ProcessFunc = r.ProcessObject
+	r.AddComponent(new(SpriteComponent))
+	r.AddComponent(new(TransformComponent))
 }
 
-func (rendersystem *RenderSystem) ProcessObject(object *Object) {
+// ProcessObject takes an object and adds it to the batching process
+func (r *RenderSystem) ProcessObject(object *Object) {
 	sprite := object.Component(new(SpriteComponent)).(*SpriteComponent)
 	transform := object.Component(new(TransformComponent)).(*TransformComponent)
-	rendersystem.spriteBatch.Draw(&sprite.Texture, transform.X, transform.Y, 63, 87)
+	r.spriteBatch.Draw(&sprite.Texture, transform.X, transform.Y, 63, 87)
 }

@@ -4,11 +4,13 @@ import "github.com/jackyb/go-sdl2/sdl"
 
 // Handles input
 
+// Input handles key presses
 type Input struct {
 	// Save states for all keys here
 	keyStates map[string]bool
 }
 
+// NewInput returns a new input
 func NewInput() *Input {
 	return &Input{
 		keyStates: make(map[string]bool),
@@ -491,14 +493,17 @@ func (input *Input) Process() bool {
 	return false
 }
 
+// KeyDown returns whether the key is in the down state
 func (input *Input) KeyDown(key string) bool {
 	return input.keyStates[key]
 }
 
+// SetKeyDown sets the key state to down
 func (input *Input) SetKeyDown(key string) {
 	input.keyStates[key] = true
 }
 
+// SetKeyUp sets the key state to up
 func (input *Input) SetKeyUp(key string) {
 	input.keyStates[key] = false
 }
