@@ -40,7 +40,7 @@ func (s *ScriptSystem) ProcessObject(object *Object) {
 	if script.runtime == nil {
 		// If we haven't ran scriptsystem script earlier we'll create a new runtime for it and set up its interface
 		script.runtime = otto.New()
-		s.api.InitializeRuntime(script.runtime, object)
+		s.api.MustInitializeRuntime(script.runtime, object)
 
 		// TODO: check to see if we can run the script
 		script.runtime.Run(script.Src)

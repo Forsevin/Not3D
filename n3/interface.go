@@ -17,11 +17,20 @@ func NewAPI(base *Base) *API {
 }
 
 // InitializeRuntime initializes a runtime, setting classes avaible in scripting etc
-func (api *API) InitializeRuntime(runtime *otto.Otto, object *Object) {
-	// BUG(j6n): check and return these errors
-	runtime.Set("engine", NewEngineInterface(api.base))
-	runtime.Set("object", NewObjectInterface(object))
-	runtime.Set("input", NewInputInterface(api.base.Input()))
+// This returns the first runtime error
+func (api *API) InitializeRuntime(runtime *otto.Otto, object *Object) error {
+	var engErr, objErr, inErr error
+	engErr = runtime.Set("engine", NewEngineInterface(api.base))
+	objErr = runtime.Set("object", NewObjectInterface(object))
+	inErr = runtime.Set("input", NewInputInterface(api.base.Input()))
+	return checkAnyError(engErr, objErr, inErr)
+}
+
+// MustInitializeRuntime panics on any runtime errors
+func (a *API) MustInitializeRuntime(runtime *otto.Otto, object *Object) {
+	if err := a.InitializeRuntime(runtime, object); err != nil {
+		panic(err)
+	}
 }
 
 // EngineInterface contains general engine functions
