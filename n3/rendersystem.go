@@ -8,9 +8,9 @@ type RenderSystem struct {
 }
 
 // NewRenderSystem returns a new RenderSystem with the graphics system set.
-func NewRenderSystem(graphics_ *graphics) *RenderSystem {
+func NewRenderSystem(graphics *graphics) *RenderSystem {
 	return &RenderSystem{
-		spriteBatch: NewSpriteBatch(graphics_),
+		spriteBatch: NewSpriteBatch(graphics),
 	}
 }
 

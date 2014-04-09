@@ -40,7 +40,7 @@ type Base struct {
 	// Asset mananger
 	assets *Assets
 	// Handles windows and other SDL related variables
-	graphics_ *graphics
+	graphics *graphics
 	// Handles input
 	input *Input
 	// Manange objects to be set and retrieved later
@@ -53,13 +53,13 @@ type Base struct {
 func New() *Base {
 	base := &Base{}
 
-	base.graphics_ = newGraphics()
+	base.graphics = newGraphics()
 	base.scenes = make(map[string]*Scene)
-	base.assets = NewAssets(base.graphics())
+	base.assets = NewAssets(base.graphics)
 
 	base.SetInput(NewInput())
 
-	base.AddGlobalSystem(NewRenderSystem(base.graphics())).Initialize()
+	base.AddGlobalSystem(NewRenderSystem(base.graphics)).Initialize()
 	base.AddGlobalSystem(NewScriptSystem(NewAPI(base))).Initialize()
 
 	base.prefabs = NewPrefabFactory()
@@ -102,7 +102,7 @@ func (b *Base) InitializeObject(object *Object, x, y int32) *Object {
 
 // SetWindowTitle sets the title of the window
 func (b *Base) SetWindowTitle(title string) {
-	b.graphics_.window.SetTitle(title)
+	b.graphics.window.SetTitle(title)
 }
 
 // SetActiveScene makes the active scene the one represented by the identifier
@@ -173,11 +173,6 @@ func (b *Base) UpdateSystemObjectPossesions() {
 // Log delegates to the logger
 func (b *Base) Log(msg string) {
 	gLogger.Print(msg)
-}
-
-// Graphics returns the graphics context
-func (b *Base) graphics() *graphics {
-	return b.graphics_
 }
 
 // Quit returns whether the base has quit its main loop.

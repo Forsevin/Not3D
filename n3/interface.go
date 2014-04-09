@@ -26,9 +26,9 @@ func (api *API) InitializeRuntime(runtime *otto.Otto, object *Object) error {
 	return checkAnyError(engErr, objErr, inErr)
 }
 
-// MustInitializeRuntime panics on any runtime errors
-func (a *API) MustInitializeRuntime(runtime *otto.Otto, object *Object) {
-	if err := a.InitializeRuntime(runtime, object); err != nil {
+// MustInitializeRuntime initializes a runtime and panics on any runtime errors
+func (api *API) MustInitializeRuntime(runtime *otto.Otto, object *Object) {
+	if err := api.InitializeRuntime(runtime, object); err != nil {
 		panic(err)
 	}
 }
