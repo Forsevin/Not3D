@@ -1,10 +1,12 @@
 package n3
 
 import (
-	"github.com/jackyb/go-sdl2/sdl"
 	"io/ioutil"
+
+	"github.com/jackyb/go-sdl2/sdl"
 )
 
+// Assets are a collection of assets to be used in the engine
 type Assets struct {
 	graphics     *Graphics
 	imageAssets  map[string]*sdl.Texture
@@ -14,6 +16,7 @@ type Assets struct {
 	imageDir     string
 }
 
+// NewAssets takes a pointer to graphics object and returns an Assets pointer
 func NewAssets(graphics *Graphics) *Assets {
 	return &Assets{
 		imageAssets:  make(map[string]*sdl.Texture),
@@ -24,6 +27,7 @@ func NewAssets(graphics *Graphics) *Assets {
 	}
 }
 
+// LoadImageAsset loads a file at the provided path, adding it to the assets
 func (assets *Assets) LoadImageAsset(file string) {
 	img := sdl.LoadBMP(assets.imageDir + file)
 	if img == nil {
@@ -33,10 +37,12 @@ func (assets *Assets) LoadImageAsset(file string) {
 	assets.imageAssets[file] = assets.graphics.renderer.CreateTextureFromSurface(img)
 }
 
+// ImageAsset returns the image with the provided name
 func (assets *Assets) ImageAsset(name string) *sdl.Texture {
 	return assets.imageAssets[name]
 }
 
+// LoadScriptAsset loads the script at the provided path, adding it to the assets
 func (assets *Assets) LoadScriptAsset(file string) {
 	raw, err := ioutil.ReadFile(assets.scriptDir + file)
 	if err != nil {
@@ -45,6 +51,7 @@ func (assets *Assets) LoadScriptAsset(file string) {
 	assets.scriptAssets[file] = string(raw)
 }
 
+// ScriptAsset returns the script with the provided name
 func (assets *Assets) ScriptAsset(script string) string {
 	return assets.scriptAssets[script]
 }

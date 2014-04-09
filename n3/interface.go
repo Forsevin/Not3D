@@ -4,46 +4,47 @@ import "github.com/robertkrimen/otto"
 
 // Interface for Otto
 
-type Api struct {
+// API ...
+type API struct {
 	base *Base
 }
 
-func NewApi(base *Base) *Api {
-	return &Api{
+// NewAPI returns an API with the base set
+func NewAPI(base *Base) *API {
+	return &API{
 		base: base,
 	}
 }
 
-// Inititalize a runtime, setting classes avaible in scripting etc
-func (api *Api) InitializeRuntime(runtime *otto.Otto, object *Object) {
+// InitializeRuntime initializes a runtime, setting classes avaible in scripting etc
+func (api *API) InitializeRuntime(runtime *otto.Otto, object *Object) {
+	// BUG(j6n): check and return these errors
 	runtime.Set("engine", NewEngineInterface(api.base))
 	runtime.Set("object", NewObjectInterface(object))
 	runtime.Set("input", NewInputInterface(api.base.Input()))
 }
 
-//// ENGINE INTERFACE
-// General engine functions
+// EngineInterface contains general engine functions
 type EngineInterface struct {
 	base *Base
 }
 
+// NewEngineInterface creates a new EngineInterface with the base set
 func NewEngineInterface(base *Base) *EngineInterface {
 	return &EngineInterface{
 		base: base,
 	}
 }
 
-// Set base.quit to true
+// Quit sets base.quit to true
 func (api *EngineInterface) Quit(call otto.FunctionCall) otto.Value {
 	api.base.SetQuit(true)
 
 	return otto.NullValue()
 }
 
-// Spawn a object
-// @arg1 name of prefab
-// @arg2 x cordinates
-// @arg3 y cordinates
+// SpawnPrefab is an otto function that takes three arguments, a string and two integer. This spawns an object.
+// The string is the name of the prefab, while the int arguments are X and Y coords, respectively.
 func (api *EngineInterface) SpawnPrefab(call otto.FunctionCall) otto.Value {
 	prefabName, err := call.Argument(0).ToString()
 	if err != nil {
@@ -72,14 +73,14 @@ func (api *EngineInterface) SpawnPrefab(call otto.FunctionCall) otto.Value {
 	return otto.NullValue()
 }
 
-// Print something
+// Print is an otto function that takes a javascript string and prints it
 func (api *EngineInterface) Print(call otto.FunctionCall) otto.Value {
 	msg, _ := call.Argument(0).ToString()
 	gLogger.Println(msg)
 	return otto.NullValue()
 }
 
-// Sets the active scene
+// SetActiveScene is an otto function that takes a javascript string and sets the active scene to it
 func (api *EngineInterface) SetActiveScene(call otto.FunctionCall) otto.Value {
 	scene, err := call.Argument(0).ToString()
 	if err != nil {
@@ -92,59 +93,64 @@ func (api *EngineInterface) SetActiveScene(call otto.FunctionCall) otto.Value {
 	return otto.NullValue()
 }
 
-//// INPUT INTERFACE
-// For getting input
+// InputInterface is the interface to the input system
 type InputInterface struct {
 	input *Input
 }
 
+// NewInputInterface returns a new InputInterface with the input system set.
 func NewInputInterface(input *Input) *InputInterface {
 	return &InputInterface{
 		input: input,
 	}
 }
 
-func (inputInterface *InputInterface) KeyDown(call otto.FunctionCall) otto.Value {
+// KeyDown is an otto function that takes a string, which is the key.
+// It then tries to set the keydown state in the Input system, returning the bool result.
+func (i *InputInterface) KeyDown(call otto.FunctionCall) otto.Value {
 	key, err := call.Argument(0).ToString()
 	if err != nil {
 		gLogger.Fatalln(err)
 	}
-	r, err := otto.ToValue(inputInterface.input.KeyDown(key))
+	r, err := otto.ToValue(i.input.KeyDown(key))
 	if err != nil {
 		gLogger.Fatalln(err)
 	}
-	return r
 
+	return r
 }
 
 //// TRANSFORM INTERFACE
 // Used to manipulate objects, for ObjectInterface
 
-//// OBJECT INTERFACE
-// Interface for objects (If you write a new component you want avaible for scripting you need to add a function for it here)
+// ObjectInterface is an interface for objects.
+// If you write a new component you want avaible for scripting you need to add a function for it here
 type ObjectInterface struct {
 	object *Object
 }
 
+// NewObjectInterface returns a new ObjectInterface based on object
 func NewObjectInterface(object *Object) *ObjectInterface {
 	return &ObjectInterface{
 		object: object,
 	}
 }
 
-func (objectInterface *ObjectInterface) SetX(call otto.FunctionCall) otto.Value {
+// SetX is an otto function that takes an integer and sets the object's X coord
+func (o *ObjectInterface) SetX(call otto.FunctionCall) otto.Value {
 	x, err := call.Argument(0).ToInteger()
 	if err != nil {
 		gLogger.Fatalln(err)
 	}
-	transform := objectInterface.object.Component(new(TransformComponent)).(*TransformComponent)
+	transform := o.object.Component(new(TransformComponent)).(*TransformComponent)
 	transform.X = int32(x)
 
 	return otto.NullValue()
 }
 
-func (objectInterface *ObjectInterface) GetX(call otto.FunctionCall) otto.Value {
-	transform := objectInterface.object.Component(new(TransformComponent)).(*TransformComponent)
+// GetX is an otto function that returns the object's X coord
+func (o *ObjectInterface) GetX(call otto.FunctionCall) otto.Value {
+	transform := o.object.Component(new(TransformComponent)).(*TransformComponent)
 	// api object doesn't have a transform component
 	if transform == nil {
 		return otto.NullValue()
@@ -154,19 +160,21 @@ func (objectInterface *ObjectInterface) GetX(call otto.FunctionCall) otto.Value 
 	return r
 }
 
-func (objectInterface *ObjectInterface) SetY(call otto.FunctionCall) otto.Value {
+// SetY is an otto function that takes an integer and sets the object's Y coord
+func (o *ObjectInterface) SetY(call otto.FunctionCall) otto.Value {
 	y, err := call.Argument(0).ToInteger()
 	if err != nil {
 		gLogger.Fatalln(err)
 	}
-	transform := objectInterface.object.Component(new(TransformComponent)).(*TransformComponent)
+	transform := o.object.Component(new(TransformComponent)).(*TransformComponent)
 	transform.Y = int32(y)
 
 	return otto.NullValue()
 }
 
-func (objectInterface *ObjectInterface) GetY(call otto.FunctionCall) otto.Value {
-	transform := objectInterface.object.Component(new(TransformComponent)).(*TransformComponent)
+// GetY is an otto function that returns the object's Y coord
+func (o *ObjectInterface) GetY(call otto.FunctionCall) otto.Value {
+	transform := o.object.Component(new(TransformComponent)).(*TransformComponent)
 
 	if transform == nil {
 		return otto.NullValue()
