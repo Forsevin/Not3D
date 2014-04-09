@@ -10,20 +10,20 @@ import (
 
 // Some global variables put here for convinience
 var (
-	gLogger      = log.New(os.Stdout, "[oden] ", 0)
-	gDataManager *DataManager
+	gLogger = log.New(os.Stdout, "[oden] ", 0)
+	gBits   = NewBitManager()
 )
 
 // Graphics is a SDL context, a window and a renderer
-type Graphics struct {
+type graphics struct {
 	window   *sdl.Window
 	renderer *sdl.Renderer
 }
 
 // NewGraphics returns a new Graphics context, with some defaults set.
-func NewGraphics() *Graphics {
-	window := sdl.CreateWindow("Oden", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, 640, 480, sdl.WINDOW_SHOWN)
-	return &Graphics{
+func newGraphics() *graphics {
+	window := sdl.CreateWindow("n3", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, 640, 480, sdl.WINDOW_SHOWN)
+	return &graphics{
 		window:   window,
 		renderer: sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED),
 	}
@@ -40,7 +40,7 @@ type Base struct {
 	// Asset mananger
 	assets *Assets
 	// Handles windows and other SDL related variables
-	graphics *Graphics
+	graphics_ *graphics
 	// Handles input
 	input *Input
 	// Manange objects to be set and retrieved later
@@ -52,22 +52,19 @@ type Base struct {
 // New returns a new Base with its components already built
 func New() *Base {
 	base := &Base{}
-	base.SetGraphics(NewGraphics())
 
-	gDataManager = NewDataManager()
+	base.graphics_ = newGraphics()
 	base.scenes = make(map[string]*Scene)
-	base.assets = NewAssets(base.Graphics())
+	base.assets = NewAssets(base.graphics())
+
 	base.SetInput(NewInput())
-	base.AddGlobalSystem(NewRenderSystem(base.Graphics())).Initialize()
-	api := NewAPI(base)
-	base.AddGlobalSystem(NewScriptSystem(api)).Initialize()
+
+	base.AddGlobalSystem(NewRenderSystem(base.graphics())).Initialize()
+	base.AddGlobalSystem(NewScriptSystem(NewAPI(base))).Initialize()
+
 	base.prefabs = NewPrefabFactory()
 
-	camera := base.CreateObject(0, 0)
-	camera.AddComponent(NewCameraComponent())
-
 	scene := NewScene()
-	scene.AddObject(camera)
 	base.AddScene("main", scene)
 	base.SetActiveScene("main")
 
@@ -92,9 +89,9 @@ func (b *Base) DeltaSleep() {
 }
 
 // CreateObject creates and initializes a new Object at the given coords.
-func (b *Base) CreateObject(x, y int32) *Object {
+func (b *Base) CreateObject() *Object {
 	object := NewObject()
-	return b.InitializeObject(object, x, y)
+	return b.InitializeObject(object, 0, 0)
 }
 
 // InitializeObject puts the object at the given coords.
@@ -105,7 +102,7 @@ func (b *Base) InitializeObject(object *Object, x, y int32) *Object {
 
 // SetWindowTitle sets the title of the window
 func (b *Base) SetWindowTitle(title string) {
-	b.graphics.window.SetTitle(title)
+	b.graphics_.window.SetTitle(title)
 }
 
 // SetActiveScene makes the active scene the one represented by the identifier
@@ -178,14 +175,9 @@ func (b *Base) Log(msg string) {
 	gLogger.Print(msg)
 }
 
-// SetGraphics takes a graphics context and sets the base's one to it
-func (b *Base) SetGraphics(graphics *Graphics) {
-	b.graphics = graphics
-}
-
 // Graphics returns the graphics context
-func (b *Base) Graphics() *Graphics {
-	return b.graphics
+func (b *Base) graphics() *graphics {
+	return b.graphics_
 }
 
 // Quit returns whether the base has quit its main loop.

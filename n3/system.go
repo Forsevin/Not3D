@@ -55,7 +55,7 @@ func (s *System) Process() {
 
 // AddComponent adds the compoenet to the system's aspect
 func (s *System) AddComponent(component IComponent) {
-	s.aspect.Set(gDataManager.Get(component))
+	s.aspect.Set(gBits.Get(component))
 }
 
 // SetBase sets the system's base

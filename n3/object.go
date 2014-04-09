@@ -33,8 +33,8 @@ func (object *Object) SetName(name string) {
 
 // AddComponent adds a data container to an object with its index to use later for system processing
 func (object *Object) AddComponent(component IComponent) IComponent {
-	object.data[gDataManager.Get(component)] = component
-	object.bits.Set(gDataManager.Get(component))
+	object.data[gBits.Get(component)] = component
+	object.bits.Set(gBits.Get(component))
 	return component
 }
 
@@ -72,5 +72,5 @@ func (object *Object) ComponentByIndex(index uint) IComponent {
 
 // Component simply returns the providec component.
 func (object *Object) Component(component IComponent) IComponent {
-	return object.data[gDataManager.Get(component)]
+	return object.data[gBits.Get(component)]
 }

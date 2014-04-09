@@ -8,7 +8,7 @@ import (
 
 // Assets are a collection of assets to be used in the engine
 type Assets struct {
-	graphics     *Graphics
+	graphics_    *graphics
 	imageAssets  map[string]*sdl.Texture
 	soundAssets  map[string]int
 	scriptAssets map[string]string
@@ -17,11 +17,11 @@ type Assets struct {
 }
 
 // NewAssets takes a pointer to graphics object and returns an Assets pointer
-func NewAssets(graphics *Graphics) *Assets {
+func NewAssets(graphics_ *graphics) *Assets {
 	return &Assets{
 		imageAssets:  make(map[string]*sdl.Texture),
 		scriptAssets: make(map[string]string),
-		graphics:     graphics,
+		graphics_:    graphics_,
 		imageDir:     "assets/images/",
 		scriptDir:    "assets/scripts/",
 	}
@@ -34,7 +34,7 @@ func (assets *Assets) LoadImageAsset(file string) {
 		gLogger.Fatalln("Couldn't load image asset:", sdl.GetError())
 		return
 	}
-	assets.imageAssets[file] = assets.graphics.renderer.CreateTextureFromSurface(img)
+	assets.imageAssets[file] = assets.graphics_.renderer.CreateTextureFromSurface(img)
 }
 
 // ImageAsset returns the image with the provided name
