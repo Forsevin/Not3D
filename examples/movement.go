@@ -1,6 +1,6 @@
 package main
 
-import "github.com/Forsevin/n3/n3"
+import "github.com/Forsevin/Not3D/n3"
 
 func main() {
 	engine := n3.New()
@@ -10,7 +10,7 @@ func main() {
 	engine.Assets().LoadScriptAsset("player.js")
 
 	// Create player
-	player := engine.CreateObject()
+	player := engine.CreateObject(0, 0)
 	sprite := player.AddComponent(n3.NewSpriteComponent()).(*n3.SpriteComponent)
 	script := player.AddComponent(n3.NewScriptComponent()).(*n3.ScriptComponent)
 
