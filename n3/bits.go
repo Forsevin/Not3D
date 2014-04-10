@@ -2,14 +2,13 @@ package n3
 
 import "reflect"
 
-// DataManager is ..
-// TODO(j6n) describe what it does
+// Bitmanager holds unique indexes for each component
 type BitManager struct {
 	uindex  uint
 	indexes map[reflect.Type]uint
 }
 
-// NewDataManager returns a new DataManager
+// NewBitManager returns a new BitManager
 func NewBitManager() *BitManager {
 	return &BitManager{
 		uindex:  1,
