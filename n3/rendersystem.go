@@ -4,24 +4,24 @@ package n3
 type RenderSystem struct {
 	System
 	//Maybe rendersystem should be moved somewhere else?
-	spriteBatch *SpriteBatch
+	renderer *Renderer
 }
 
 // NewRenderSystem returns a new RenderSystem with the graphics system set.
 func NewRenderSystem(graphics *graphics) *RenderSystem {
 	return &RenderSystem{
-		spriteBatch: NewSpriteBatch(graphics),
+		renderer: NewRenderer(graphics),
 	}
 }
 
 // Begin the batch process
 func (r *RenderSystem) Begin() {
-	r.spriteBatch.Begin()
+	r.renderer.Clear()
 }
 
 // End the batch process
 func (r *RenderSystem) End() {
-	r.spriteBatch.End()
+	r.renderer.Render()
 }
 
 // Initialize the rendersystem with some defaults
@@ -35,5 +35,5 @@ func (r *RenderSystem) Initialize() {
 func (r *RenderSystem) ProcessObject(object *Object) {
 	sprite := object.Component(new(SpriteComponent)).(*SpriteComponent)
 	transform := object.Component(new(TransformComponent)).(*TransformComponent)
-	r.spriteBatch.Draw(&sprite.Texture, transform.X, transform.Y, 63, 87)
+	r.renderer.DrawTex(&sprite.Texture, transform.X, transform.Y, 10, 10)
 }
