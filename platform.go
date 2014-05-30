@@ -1,8 +1,68 @@
+/* Platform.go
+ * Platform specific events and handlers e.g for windows, rendering and input
+ * example:
+ *
+ * if platform.Input.Get("w") {
+ *	fmt.Println("W is down")
+ * }
+ */
 package n3
 
-import "github.com/jackyb/go-sdl2/sdl"
+import "github.com/veandco/go-sdl2/sdl"
+import "github.com/veandco/go-sdl2/sdl_ttf"
 
-// Handles input
+// basic colors
+var (
+	COLOR_RED   = sdl.Color{255, 0, 0, 0}
+	COLOR_GREEN = sdl.Color{0, 255, 0, 0}
+	COLOR_BLUE  = sdl.Color{0, 0, 255, 0}
+)
+
+// wraps around the platform structures
+type Platform struct {
+	input    *Input
+	window   *Window
+	renderer *Renderer
+}
+
+// NewPlatform returns a new platform
+func NewPlatform() *Platform {
+	p := &Platform{
+		input: &Input{
+			keyStates: make(map[string]bool),
+		},
+		window: &Window{
+			window: sdl.CreateWindow("Application", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, 640, 480, sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE),
+		},
+	}
+	p.renderer = &Renderer{
+		renderer: sdl.CreateRenderer(p.window.window, -1, sdl.RENDERER_ACCELERATED|sdl.RENDERER_PRESENTVSYNC),
+	}
+
+	ttf.Init()
+
+	return p
+}
+
+// Handle window
+type Window struct {
+	window *sdl.Window
+}
+
+// Set window to fullscreen
+func (w *Window) FullScreen() {
+	w.window.SetFullscreen(1)
+}
+
+// Wrapper around sdl.Renderer
+type Renderer struct {
+	renderer      *sdl.Renderer
+	backgroundTex *sdl.Texture
+}
+
+func (r *Renderer) SetBackground(tex *sdl.Texture) {
+	r.backgroundTex = tex
+}
 
 // Input handles key presses
 type Input struct {
@@ -43,9 +103,17 @@ func (input *Input) KeyDown(key string) bool {
 	return input.keyStates[key]
 }
 
+func (input *Input) PointerToKey(key string) *bool {
+	return nil
+}
+
 // SetKeyDown sets the key state to down
 func (input *Input) SetKeyDown(key string) {
 	input.keyStates[key] = true
+}
+
+func (input *Input) GetMouseCords() (x, y int32) {
+	return 0, 0
 }
 
 // SetKeyUp sets the key state to up
